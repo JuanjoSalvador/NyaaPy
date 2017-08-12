@@ -1,0 +1,8 @@
+setup.py
+NyaaPy/__init__.py
+NyaaPy/nyaa.py
+nyaapy.egg-info/PKG-INFO
+nyaapy.egg-info/SOURCES.txt
+nyaapy.egg-info/dependency_links.txt
+nyaapy.egg-info/not-zip-safe
+nyaapy.egg-info/top_level.txt

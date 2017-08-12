@@ -1,0 +1,15 @@
+Metadata-Version: 1.0
+Name: nyaapy
+Version: 0.1
+Summary: Allows you to make requests on Nyaa.si and nyaa.pantsu.cat
+Home-page: https://github.com/juanjosalvador/nyaapy
+Author: Juanjo Salvador
+Author-email: juanjosalvador@netc.eu
+License: MIT
+Description: # NyaaPy
+        
+        Unofficial Python module to search into Nyaa.si and nyaa.pantsu.cat.
+        
+        Based on [Kylart's Nyaapi](https://github.com/Kylart/Nyaapi).
+        
+Platform: UNKNOWN
