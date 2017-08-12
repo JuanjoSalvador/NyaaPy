@@ -21,7 +21,7 @@ At this moment there isn't an official Nyaa.si API, so we only can make requests
 1. Clone or fork the repo.
 
     ```
-    $ git clone https://github.com/JuanjoSalvador/nyaapy.github
+    $ git clone https://github.com/JuanjoSalvador/nyaapy.git
     ```
 
 2. Set the virtual environment.
