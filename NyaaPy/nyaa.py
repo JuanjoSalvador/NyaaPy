@@ -8,7 +8,11 @@ class Nyaa():
 
         request  = requests.get(nyaa_baseurl + keyword)
         response = xmltodict.parse(request.text)
-        results = response['rss']['channel']['item']
+
+        try:
+            results = response['rss']['channel']['item']
+        except KeyError as ex:
+            results = {}
 
         return results
 
@@ -18,6 +22,10 @@ class NyaaPantsu():
 
         request  = requests.get(nyaapantsu_baseurl + keyword)
         response = xmltodict.parse(request.text)
-        results = response['rss']['channel']['item']
+
+        try:
+            results = response['rss']['channel']['item']
+        except KeyError as ex:
+            results = {}
 
         return results

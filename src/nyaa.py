@@ -13,7 +13,11 @@ class Nyaa:
 
         request  = requests.get(nyaa_baseurl + keyword)
         response = xmltodict.parse(request.text)
-        results = response['rss']['channel']['item']
+
+        try:
+            results = response['rss']['channel']['item']
+        except Exception as ex:
+            print(ex)
 
         return results
 
