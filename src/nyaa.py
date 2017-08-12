@@ -1,6 +1,7 @@
 import requests
 import xmltodict
-
+import json
+import collections
 
 class Nyaa:
     '''
@@ -14,10 +15,16 @@ class Nyaa:
         request  = requests.get(nyaa_baseurl + keyword)
         response = xmltodict.parse(request.text)
 
+        results = []
+
         try:
-            results = response['rss']['channel']['item']
-        except Exception as ex:
-            print(ex)
+            if type(response['rss']['channel']['item']) is collections.OrderedDict:
+                results.append(response['rss']['channel']['item'])
+            else:
+                results = response['rss']['channel']['item']
+
+        except KeyError as ex:
+            results = []
 
         return results
 
@@ -32,6 +39,16 @@ class NyaaPantsu:
 
         request  = requests.get(nyaa_baseurl + keyword)
         response = xmltodict.parse(request.text)
-        results = response['rss']['channel']['item']
+
+        results = []
+
+        try:
+            if type(response['rss']['channel']['item']) is collections.OrderedDict:
+                results.append(response['rss']['channel']['item'])
+            else:
+                results = response['rss']['channel']['item']
+
+        except KeyError as ex:
+            results = []
 
         return results
