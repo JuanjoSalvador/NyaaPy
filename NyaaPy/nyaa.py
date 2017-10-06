@@ -4,13 +4,16 @@ import json
 import collections
 
 class Nyaa():
-    def search(keyword):
-        nyaa_baseurl = "https://nyaa.si/?page=rss&c=1_0&f=0&q="
+    def search(keyword, page):
+        if not page:
+            url  = "https://nyaa.si/?page=rss&c=1_0&f=0&q={}".format(keyword)
+        else:
+            url  = "https://nyaa.si/?page=rss&c=1_0&f=0&q={}&p={}".format(keyword, page)
 
-        request  = requests.get(nyaa_baseurl + keyword)
+        request  = requests.get(url)
         response = xmltodict.parse(request.text)
 
-        results = []
+        results  = []
 
         try:
             if type(response['rss']['channel']['item']) is collections.OrderedDict:
