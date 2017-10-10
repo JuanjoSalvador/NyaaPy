@@ -1,7 +1,6 @@
 import requests
-import xmltodict
 import json
-import collections
+from bs4 import BeautifulSoup
 
 # Info about the module
 __version__   = '0.4'
@@ -12,29 +11,33 @@ __copyright__ = '2017 Juanjo Salvador'
 __license__   = 'MIT license'
 
 class Nyaa():
-    '''
-     Make a query to nyaa.si using keyword as keyword.
-     Returns an array of OrderedDict with every result of the query.
-     Returns an empty array if no results.
-    '''
-    def search(keyword):
-        nyaa_baseurl = "https://nyaa.si/?page=rss&c=1_0&f=0&q="
+    def search(keyword, category, subcategory, filters):
+        r = requests.get("http://nyaa.si/?f={}&c={}_{}&q={}".format(filters, category, subcategory, keyword))
+        soup = BeautifulSoup(r.text, 'html.parser')
+        rows = soup.select('table tr')
 
-        request  = requests.get(nyaa_baseurl + keyword)
-        response = xmltodict.parse(request.text)
+        torrents = []
 
-        results = []
+        for row in rows:
+            td = row.find_all('td')
+            torrent = []
 
-        try:
-            if type(response['rss']['channel']['item']) is collections.OrderedDict:
-                results.append(response['rss']['channel']['item'])
-            else:
-                results = response['rss']['channel']['item']
+            for i in td:
+                if i.find('a'):
+                    torrent.append(i.find('a').get('href'))
+                    text = i.text.rstrip()
+                    if len(text) > 0:
+                        torrent.append(text)
+                else:
+                    text = i.text.rstrip()
+                    if len(text) > 0:
+                        torrent.append(text)
 
-        except KeyError as ex:
-            results = []
+            torrents.append(torrent)
+        
+        print(torrents)
 
-        return results
+        return torrents
 
     '''
      Returns an array of OrderedDict with the n last updates of Nyaa.si

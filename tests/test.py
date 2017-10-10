@@ -1,15 +1,12 @@
-import json
+import json, requests
 from NyaaPy import Nyaa, NyaaPantsu
 
 # Nyaa.si results
 def nyaa_search():
     nyaa_query = Nyaa.search('koe no katachi 1080')
 
-    if len(nyaa_query) > 0:
-        for result in nyaa_query:
-            print(result['title'])
-    else:
-        print('Nothing here!')
+    for nyaa in nyaa_query:
+        print(nyaa)
 
 def nyaa_news():
     news = Nyaa.news(5)
@@ -35,7 +32,30 @@ def pantsu_news():
 
 # Uncomment whatever you want to test
 
-#nyaa_search()
+nyaa_search()
 #pantsu_search()
 #nyaa_news()
-pantsu_news()
+#pantsu_news()
+
+''' r = requests.get("http://nyaa.si/")
+soup = BeautifulSoup(r.text, 'html.parser')
+rows = soup.select('table tr')
+
+torrents = []
+
+for row in rows:
+    td = row.find_all('td')
+    torrent = []
+
+    for i in td:
+        if i.find('a'):
+            torrent.append(i.find('a').get('href'))
+            text = i.text.rstrip()
+            if len(text) > 0:
+                torrent.append(text)
+        else:
+            text = i.text.rstrip()
+            if len(text) > 0:
+                torrent.append(text)
+
+        torrents.append(torrent) '''
