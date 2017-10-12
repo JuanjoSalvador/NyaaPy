@@ -3,16 +3,16 @@ from NyaaPy import Nyaa, NyaaPantsu
 
 # Nyaa.si results
 def nyaa_search():
-    nyaa_query = Nyaa.search('koe no katachi 1080')
+    nyaa_query = Nyaa.search('koe no katachi 1080', 1, 0, 0, 2)
 
     for nyaa in nyaa_query:
-        print(nyaa)
+        print(nyaa['date'])
 
 def nyaa_news():
     news = Nyaa.news(5)
 
     for result in news:
-        print(result['title'])
+        print(result['name'])
 
 # Nyaa.pantsu.cat results
 def pantsu_search():
@@ -34,7 +34,7 @@ def pantsu_news():
 
 nyaa_search()
 #pantsu_search()
-#nyaa_news()
+nyaa_news()
 #pantsu_news()
 
 ''' r = requests.get("http://nyaa.si/")

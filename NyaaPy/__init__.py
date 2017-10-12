@@ -11,46 +11,96 @@ __copyright__ = '2017 Juanjo Salvador'
 __license__   = 'MIT license'
 
 class Nyaa():
-    def search(keyword, category, subcategory, filters):
-        r = requests.get("http://nyaa.si/?f={}&c={}_{}&q={}".format(filters, category, subcategory, keyword))
+    '''
+     Return a list of dicts with the results of the query.
+    '''
+    def search(keyword, category, subcategory, filters, page):
+        if page:
+            r = requests.get("http://nyaa.si/?f={}&c={}_{}&q={}&p={}".format(filters, category, subcategory, keyword, page))
+        else:
+            r = requests.get("http://nyaa.si/?f={}&c={}_{}&q={}".format(filters, category, subcategory, keyword))
+
         soup = BeautifulSoup(r.text, 'html.parser')
         rows = soup.select('table tr')
 
         torrents = []
 
         for row in rows:
-            td = row.find_all('td')
-            torrent = []
+            block = []
 
-            for i in td:
-                if i.find('a'):
-                    torrent.append(i.find('a').get('href'))
-                    text = i.text.rstrip()
-                    if len(text) > 0:
-                        torrent.append(text)
-                else:
-                    text = i.text.rstrip()
-                    if len(text) > 0:
-                        torrent.append(text)
+            for td in row.find_all('td'):
+                if td.find_all('a'):
+                    for link in td.find_all('a'):
+                        if link.get('href')[-9:] != '#comments':
+                            block.append(link.get('href'))
+                            if link.text.rstrip():
+                                block.append(link.text)
 
-            torrents.append(torrent)
-        
-        print(torrents)
+                if td.text.rstrip():
+                    block.append(td.text.rstrip())
+
+            try:
+                torrent = {
+                    'category': block[0].replace('/?c=', ''),
+                    'url': "http://nyaa.si{}".format(block[1]),
+                    'name': block[2],
+                    'download_url': "http://nyaa.si{}".format(block[4]),
+                    'magnet': block[5],
+                    'size': block[6],
+                    'date': block[7],
+                    'seeders': block[8],
+                    'leechers': block[9],
+                    'completed_downloads': block[10],
+                }
+            
+                torrents.append(torrent)
+            except IndexError:
+                print("Error! {}".format(block))
 
         return torrents
-
     '''
-     Returns an array of OrderedDict with the n last updates of Nyaa.si
+     Returns an array of dicts with the n last updates of Nyaa.si
     '''
     def news(n):
-        nyaa_baseurl = "https://nyaa.si/?page=rss"
+        r = requests.get("http://nyaa.si/")
+        soup = BeautifulSoup(r.text, 'html.parser')
+        rows = soup.select('table tr')
 
-        request  = requests.get(nyaa_baseurl)
-        response = xmltodict.parse(request.text)
+        torrents = []
 
-        results = response['rss']['channel']['item']
+        for row in rows:
+            block = []
 
-        return results[:n]
+            for td in row.find_all('td'):
+                if td.find_all('a'):
+                    for link in td.find_all('a'):
+                        if link.get('href')[-9:] != '#comments':
+                            block.append(link.get('href'))
+                            if link.text.rstrip():
+                                block.append(link.text)
+
+                if td.text.rstrip():
+                    block.append(td.text.rstrip())
+
+            try:
+                torrent = {
+                    'category': block[0].replace('/?c=', ''),
+                    'url': "http://nyaa.si{}".format(block[1]),
+                    'name': block[2],
+                    'download_url': "http://nyaa.si{}".format(block[4]),
+                    'magnet': block[5],
+                    'size': block[6],
+                    'date': block[7],
+                    'seeders': block[8],
+                    'leechers': block[9],
+                    'completed_downloads': block[10],
+                }
+            
+                torrents.append(torrent)
+            except IndexError:
+                print("Error! {}".format(block))
+
+        return torrents[:n]
 
 class NyaaPantsu():
     '''
