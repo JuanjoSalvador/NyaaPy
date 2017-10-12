@@ -3,7 +3,7 @@ import json
 from bs4 import BeautifulSoup
 
 # Info about the module
-__version__   = '0.4'
+__version__   = '0.4.1'
 __author__    = 'Juanjo Salvador'
 __email__     = 'juanjosalvador@netc.eu'
 __url__       = 'http://juanjosalvador.me'
@@ -25,37 +25,42 @@ class Nyaa():
 
         torrents = []
 
-        for row in rows:
-            block = []
+        if rows:
+            for row in rows:
+                block = []
 
-            for td in row.find_all('td'):
-                if td.find_all('a'):
-                    for link in td.find_all('a'):
-                        if link.get('href')[-9:] != '#comments':
-                            block.append(link.get('href'))
-                            if link.text.rstrip():
-                                block.append(link.text)
+                for td in row.find_all('td'):
+                    if td.find_all('a'):
+                        for link in td.find_all('a'):
+                            if link.get('href')[-9:] != '#comments':
+                                block.append(link.get('href'))
+                                if link.text.rstrip():
+                                    block.append(link.text)
 
-                if td.text.rstrip():
-                    block.append(td.text.rstrip())
+                    if td.text.rstrip():
+                        block.append(td.text.rstrip())
 
-            try:
-                torrent = {
-                    'category': block[0].replace('/?c=', ''),
-                    'url': "http://nyaa.si{}".format(block[1]),
-                    'name': block[2],
-                    'download_url': "http://nyaa.si{}".format(block[4]),
-                    'magnet': block[5],
-                    'size': block[6],
-                    'date': block[7],
-                    'seeders': block[8],
-                    'leechers': block[9],
-                    'completed_downloads': block[10],
-                }
-            
-                torrents.append(torrent)
-            except IndexError:
-                print("Error! {}".format(block))
+                try:
+                    c = block[0].replace('/?c=', '')
+                    cats = c.split('_')
+
+                    torrent = {
+                        'category': cats[0],
+                        'subcategory': cats[1],
+                        'url': "http://nyaa.si{}".format(block[1]),
+                        'name': block[2],
+                        'download_url': "http://nyaa.si{}".format(block[4]),
+                        'magnet': block[5],
+                        'size': block[6],
+                        'date': block[7],
+                        'seeders': block[8],
+                        'leechers': block[9],
+                        'completed_downloads': block[10],
+                    }
+                
+                    torrents.append(torrent)
+                except IndexError as ie:
+                    pass
 
         return torrents
     '''
@@ -83,8 +88,12 @@ class Nyaa():
                     block.append(td.text.rstrip())
 
             try:
+                c = block[0].replace('/?c=', '')
+                cats = c.split('_')
+
                 torrent = {
-                    'category': block[0].replace('/?c=', ''),
+                    'category': cats[0],
+                    'subcategory': cats[1],
                     'url': "http://nyaa.si{}".format(block[1]),
                     'name': block[2],
                     'download_url': "http://nyaa.si{}".format(block[4]),
@@ -98,7 +107,7 @@ class Nyaa():
             
                 torrents.append(torrent)
             except IndexError:
-                print("Error! {}".format(block))
+                pass
 
         return torrents[:n]
 
