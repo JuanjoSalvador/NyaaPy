@@ -1,5 +1,4 @@
 import requests
-import json
 from bs4 import BeautifulSoup
 
 # Info about the module
@@ -15,7 +14,7 @@ class Nyaa():
      Return a list of dicts with the results of the query.
     '''
     def search(keyword, category, subcategory, filters, page):
-        if page:
+        if page > 0:
             r = requests.get("http://nyaa.si/?f={}&c={}_{}&q={}&p={}".format(filters, category, subcategory, keyword, page))
         else:
             r = requests.get("http://nyaa.si/?f={}&c={}_{}&q={}".format(filters, category, subcategory, keyword))
@@ -41,12 +40,8 @@ class Nyaa():
                         block.append(td.text.rstrip())
 
                 try:
-                    c = block[0].replace('/?c=', '')
-                    cats = c.split('_')
-
                     torrent = {
-                        'category': cats[0],
-                        'subcategory': cats[1],
+                        'category': get_categories(block[0]),
                         'url': "http://nyaa.si{}".format(block[1]),
                         'name': block[2],
                         'download_url': "http://nyaa.si{}".format(block[4]),
@@ -63,6 +58,7 @@ class Nyaa():
                     pass
 
         return torrents
+    
     '''
      Returns an array of dicts with the n last updates of Nyaa.si
     '''
@@ -88,12 +84,8 @@ class Nyaa():
                     block.append(td.text.rstrip())
 
             try:
-                c = block[0].replace('/?c=', '')
-                cats = c.split('_')
-
                 torrent = {
-                    'category': cats[0],
-                    'subcategory': cats[1],
+                    'category': get_categories(block[0]),
                     'url': "http://nyaa.si{}".format(block[1]),
                     'name': block[2],
                     'download_url': "http://nyaa.si{}".format(block[4]),
@@ -108,6 +100,7 @@ class Nyaa():
                 torrents.append(torrent)
             except IndexError:
                 pass
+
 
         return torrents[:n]
 
@@ -148,3 +141,33 @@ class NyaaPantsu():
         results = response['rss']['channel']['item']
 
         return results[:n]
+
+# Auxiliar functions
+
+def get_categories(b):
+    c = b.replace('/?c=', '')
+    cats = c.split('_')
+
+    cat = cats[0]
+    subcat = cats[1]
+
+    categories = {
+        "1": {
+            "name": "Anime",
+            "subcats": {
+                "1": "test",
+                "2": "test",
+                "3": "test",
+                "4": "test",
+                "5": "test",
+                "6": "test",
+                "7": "test"
+            }
+        },
+        "2": "Audio",
+        "3": "Literature",
+        "4": "Live Action",
+        "5": "Pictures",
+        "6": "Software"
+    }
+    return "{} - {}".format()
