@@ -1,18 +1,16 @@
-import json, requests
 from NyaaPy import Nyaa, NyaaPantsu
 
 # Nyaa.si results
 def nyaa_search():
-    nyaa_query = Nyaa.search('koe no katachi 1080', 1, 0, 0, 0)
+    nyaa_query = Nyaa.search(keyword='koe no katachi 1080', category=1, subcategory=0, filters=0, page=0)
 
     for nyaa in nyaa_query:
-        print(nyaa['date'])
+        print(nyaa)
 
 def nyaa_news():
-    news = Nyaa.news(5)
-
-    for result in news:
-        print(result)
+    news = Nyaa.news(number_of_results=5)
+    for n in news:
+        print(n)
 
 # Nyaa.pantsu.cat results
 def pantsu_search():
