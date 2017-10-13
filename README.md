@@ -4,14 +4,14 @@ Unofficial Python module to search into Nyaa.si and nyaa.pantsu.cat.
 
 Supports Python 3+
 
-* [Installation](#Installation)
-* [Example](#Example)
-* [Methods](#Methods)
+* [Installation](#installation)
+* [Example](#example)
+* [Methods](#methods)
     * [search()](#search())
     * [news()](#news())
-* [Categories and subcategories](#Categories-and-subcategories)
-* [Contributions and development](#Contributons-and-development)
-* [License](#License)
+* [Categories and subcategories](#categories-and-subcategories)
+* [Contributions and development](#contributons-and-development)
+* [License](#license)
 
 
 ## Installation
