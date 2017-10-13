@@ -1,20 +1,36 @@
-from NyaaPy.nyaa import Nyaa
-from NyaaPy.nyaa import NyaaPantsu
-import json
+from NyaaPy import Nyaa, NyaaPantsu
 
 # Nyaa.si results
-nyaa_query = Nyaa.search('koe no katachi 1080')
+def nyaa_search():
+    nyaa_query = Nyaa.search(keyword='koe no katachi 1080', category=1, subcategory=0, filters=0, page=0)
 
-if len(nyaa_query) > 0:
-    for result in nyaa_query:
-        print(result['title'])
-else:
-    print('Nothing here!')
+    for nyaa in nyaa_query:
+        print(nyaa)
+
+def nyaa_news():
+    news = Nyaa.news(number_of_results=5)
+    for n in news:
+        print(n)
 
 # Nyaa.pantsu.cat results
-pantsu_query = NyaaPantsu.search('new game!!')
-if len(pantsu_query) > 0:
-    for result in pantsu_query:
+def pantsu_search():
+    pantsu_query = NyaaPantsu.search('new game!!')
+    if len(pantsu_query) > 0:
+        for result in pantsu_query:
+            print(result['title'])
+    else:
+        print('Nothing here!')
+
+
+def pantsu_news():
+    news = NyaaPantsu.news(5)
+
+    for result in news:
         print(result['title'])
-else:
-    print('Nothing here!')
+
+# Uncomment whatever you want to test
+
+#nyaa_search()
+#pantsu_search()
+nyaa_news()
+#pantsu_news()

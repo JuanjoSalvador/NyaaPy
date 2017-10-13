@@ -1,47 +1,33 @@
 import requests
-import xmltodict
-import json
-import collections
+from bs4 import BeautifulSoup
+from NyaaPy.utils import Utils as utils
 
 class Nyaa():
-    def search(keyword, page):
-        if not page:
-            url  = "https://nyaa.si/?page=rss&c=1_0&f=0&q={}".format(keyword)
+    '''
+     Return a list of dicts with the results of the query.
+    '''
+    def search(keyword, category, subcategory, filters, page):
+        if page > 0:
+            r = requests.get("http://nyaa.si/?f={}&c={}_{}&q={}&p={}".format(filters, category, subcategory, keyword, page))
         else:
-            url  = "https://nyaa.si/?page=rss&c=1_0&f=0&q={}&p={}".format(keyword, page)
+            r = requests.get("http://nyaa.si/?f={}&c={}_{}&q={}".format(filters, category, subcategory, keyword))
 
-        request  = requests.get(url)
-        response = xmltodict.parse(request.text)
+        soup = BeautifulSoup(r.text, 'html.parser')
+        rows = soup.select('table tr')
 
-        results  = []
+        results = {}
 
-        try:
-            if type(response['rss']['channel']['item']) is collections.OrderedDict:
-                results.append(response['rss']['channel']['item'])
-            else:
-                results = response['rss']['channel']['item']
-
-        except KeyError as ex:
-            results = []
+        if rows:
+            results = utils.parse_nyaa(rows, limit=None)
 
         return results
+    
+    '''
+     Returns an array of dicts with the n last updates of Nyaa.si
+    '''
+    def news(number_of_results):
+        r = requests.get("http://nyaa.si/")
+        soup = BeautifulSoup(r.text, 'html.parser')
+        rows = soup.select('table tr')
 
-class NyaaPantsu():
-    def search(keyword):
-        nyaapantsu_baseurl = "https://nyaa.pantsu.cat/feed?c=_&s=0&max=99999&userID=0&q="
-
-        request  = requests.get(nyaa_baseurl + keyword)
-        response = xmltodict.parse(request.text)
-
-        results = []
-
-        try:
-            if type(response['rss']['channel']['item']) is collections.OrderedDict:
-                results.append(response['rss']['channel']['item'])
-            else:
-                results = response['rss']['channel']['item']
-
-        except KeyError as ex:
-            results = []
-
-        return results
+        return utils.parse_nyaa(rows, limit=number_of_results)
