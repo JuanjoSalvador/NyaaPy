@@ -36,7 +36,7 @@ Install it using pip.
         print('Nothing here!')
 
     for new in nyaa_news:
-        print(new['name])
+        print(new['name'])
 ```
 
 ## Methods
