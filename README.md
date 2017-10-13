@@ -31,12 +31,12 @@ Install it using pip.
 
     if len(nyaa_query) > 0:
         for result in nyaa_query:
-            print(result['title'])
+            print(result['name'])
     else:
         print('Nothing here!')
 
     for new in nyaa_news:
-        print(new['title])
+        print(new['name])
 ```
 
 ## Methods
