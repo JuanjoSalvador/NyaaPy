@@ -2,15 +2,132 @@
 
 Unofficial Python module to search into Nyaa.si and nyaa.pantsu.cat.
 
-Based on [Kylart's Nyaapi](https://github.com/Kylart/Nyaapi).
+Supports Python 3+
+
+* Installation
+* Example
+* Methods
+    * search()
+    * news()
+* Categories and subcategories
+* Contributions and development
+* License
 
 
-### Installation and ussage
+## Installation
 
 Install it using pip.
 
     pip install nyaapy
 
+## Example
+
+```python
+    from NyaaPy import Nyaa, NyaaPantsu
+
+    nyaa_query = Nyaa.search(keyword='koe no katachi 1080', category=1, subcategory=0, filters=0, page=0)
+
+    nyaa_news = Nyaa.news(5)
+
+    if len(nyaa_query) > 0:
+        for result in nyaa_query:
+            print(result['title'])
+    else:
+        print('Nothing here!')
+
+    for new in nyaa_news:
+        print(new['title])
+```
+
+## Methods
+
+### search()
+
+Returns a list of dicts with the search results.
+
+Parameters:
+
+* **keyword**: String. Keyword for the search query.
+* **category**: Integer.
+* **subcategory**: Integer. 
+* **filters**: Integer. 
+* **page**: Integer.
+
+`page` must be between 0 and 1000.
+
+#### Dict returned for Nyaa.si
+
+```python
+    'category': "Anime - English-translated",
+    'url': "https://nyaa.si/view/968600",
+    'name': "[HorribleSubs] Shoukoku no Altair - 14 [720p].mkv",
+    'download_url': "https://nyaa.si/download/968600.torrent",
+    'magnet': <magnet torrent URI>
+    'size': "317.2 MiB",
+    'date': "2017-10-13 20:16",
+    'seeders': "538",
+    'leechers': "286",
+    'completed_downloads': "852"
+```
+
+### news()
+
+Parameters:
+
+* **number_of_results**: Integer
+
+`number_of_results` must be between 1 and 75.
+
+
+## Categories and subcategories
+
+List of available categories and subcategories:
+
+1. Anime.
+
+    1.1 - Anime Music Video
+
+    1.2 - English-translated
+
+    1.3 - Non-English-translated
+
+    1.4 - Raw
+
+2. Audio.
+
+    2.1 - Lossless
+
+    2.2 - Lossy
+
+3. Literature.
+
+    3.1 - English-translated
+
+    3.2 - Non-English-translated
+
+    3.3 - Raw
+
+4. Live Action.
+
+    4.1 - English-translated
+
+    4.2 - Idol/Promotional Video
+
+    4.3 - Non-English-translated
+
+    4.4 - Raw
+
+5. Pictures.
+
+    5.1 - Graphics
+
+    5.2 - Photos
+
+6. Software.
+
+    6.1 - Applications
+
+    6.2 - Games
 
 ### Contributions and development
 
@@ -35,28 +152,6 @@ At this moment there isn't an official Nyaa.si API, so we only can make requests
 
 4. Always use the code into `src` folder, never the package.
 
-### Example code
-
-    from NyaaPy.nyaa import Nyaa
-    from NyaaPy.nyaa import NyaaPantsu
-
-    # Nyaa.si results
-    nyaa_query = Nyaa.search('illo que pasa')
-
-    if len(nyaa_query) > 0:
-        for result in nyaa_query:
-            print(result['title'])
-    else:
-        print('Nothing here!')
-
-    # Nyaa.pantsu.cat results
-    pantsu_query = NyaaPantsu.search('new game')
-    if len(pantsu_query) > 0:
-        for result in pantsu_query:
-            print(result['title'])
-    else:
-        print('Nothing here!')
-
-### License
+## License
 
 MIT license.
