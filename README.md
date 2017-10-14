@@ -1,3 +1,7 @@
+[![GitHub license](https://img.shields.io/badge/license-MIT-blue.svg)](https://raw.githubusercontent.com/JuanjoSalvador/NyaaPy/master/LICENSE.txt)
+![](https://img.shields.io/badge/Python-3%2B-green.svg)
+![](https://img.shields.io/badge/Nyaa.si-supported-orange.svg)
+
 # NyaaPy
 
 Unofficial Python module to search into Nyaa.si
