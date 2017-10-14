@@ -5,13 +5,14 @@ from NyaaPy.utils import Utils as utils
 
 class NyaaPantsu():
     '''
-     Return a list of dicts with the results of the query.
+        Simple search.
+        Return a list of dicts with the results of the query.
     '''
     def search(keyword, category, subcategory, filters, page):
         if page > 0:
-            r = requests.get("http://nyaa.pantsu.cat/?f={}&c={}_{}&q={}&p={}".format(filters, category, subcategory, keyword, page))
+            r = requests.get("http://nyaa.pantsu.cat/search/{}?c={}_{}&q={}".format(page, category, subcategory, keyword))
         else:
-            r = requests.get("http://nyaa.pantsu.cat/?f={}&c={}_{}&q={}".format(filters, category, subcategory, keyword))
+            r = requests.get("http://nyaa.pantsu.cat/search/?c={}_{}&q={}".format(category, subcategory, keyword))
 
         soup = BeautifulSoup(r.text, 'html.parser')
         rows = soup.select('table tr')
