@@ -4,7 +4,7 @@
 
 class Utils():
 
-    def get_categories(b):
+    def nyaa_categories(b):
         c = b.replace('/?c=', '')
         cats = c.split('_')
 
@@ -68,6 +68,15 @@ class Utils():
 
         return category_name
 
+    def pantsu_categories(b):
+        c = b.replace('/search?c=', '')
+        cats = c.split('_')
+
+        cat = cats[0]
+        subcat = cats[1]
+
+        return "{} - {}".format(cat, subcat)
+
     def parse_nyaa(table_rows, limit):
 
         torrents = []
@@ -88,7 +97,7 @@ class Utils():
 
                 try:
                     torrent = {
-                        'category': Utils.get_categories(block[0]),
+                        'category': Utils.nyaa_categories(block[0]),
                         'url': "http://nyaa.si{}".format(block[1]),
                         'name': block[2],
                         'download_url': "http://nyaa.si{}".format(block[4]),
@@ -103,5 +112,43 @@ class Utils():
                     torrents.append(torrent)
                 except IndexError as ie:
                     pass
+        
+        return torrents
+
+    def parse_pantsu(table_rows, limit):
+
+        torrents = []
+
+        limit = limit + 1
+
+        for row in table_rows[1:limit]:
+            block = []
+                
+            for td in row.find_all('td'):
+                if td.find_all('a'):
+                    for link in td.find_all('a'):
+                        if "lang" not in link.get('href'):
+                            block.append(link.get('href'))
+
+                if td.text.rstrip():
+                    block.append(td.text.replace('\n', ''))
+                    
+            try:
+                torrent = {
+                    'category': Utils.pantsu_categories(block[0]),
+                    'url': "http://nyaa.pantsu.cat{}".format(block[1]),
+                    'name': block[2],
+                    'download_url': block[4],
+                    'magnet': block[3],
+                    'size': block[5],
+                    'date': block[9],
+                    'seeders': block[6],
+                    'leechers': block[7],
+                    'completed_downloads': block[8],
+                }
+            
+                torrents.append(torrent)
+            except IndexError as ie:
+                pass
         
         return torrents

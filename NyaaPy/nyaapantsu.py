@@ -5,38 +5,30 @@ from NyaaPy.utils import Utils as utils
 
 class NyaaPantsu():
     '''
-     Make a query to nyaa.pantsu.cat using keyword as keyword.
-     Returns an array of OrderedDict with every result of the query.
-     Returns an empty array if no results.
+     Return a list of dicts with the results of the query.
     '''
-    def search(keyword):
-        nyaapantsu_baseurl = "https://nyaa.pantsu.cat/feed?c=_&s=0&max=99999&userID=0&q="
+    def search(keyword, category, subcategory, filters, page):
+        if page > 0:
+            r = requests.get("http://nyaa.pantsu.cat/?f={}&c={}_{}&q={}&p={}".format(filters, category, subcategory, keyword, page))
+        else:
+            r = requests.get("http://nyaa.pantsu.cat/?f={}&c={}_{}&q={}".format(filters, category, subcategory, keyword))
 
-        request  = requests.get(nyaa_baseurl + keyword)
-        response = xmltodict.parse(request.text)
+        soup = BeautifulSoup(r.text, 'html.parser')
+        rows = soup.select('table tr')
 
-        results = []
+        results = {}
 
-        try:
-            if type(response['rss']['channel']['item']) is collections.OrderedDict:
-                results.append(response['rss']['channel']['item'])
-            else:
-                results = response['rss']['channel']['item']
-
-        except KeyError as ex:
-            results = []
+        if rows:
+            results = utils.parse_pantsu(rows, limit=None)
 
         return results
-
+    
     '''
-     Returns an array of OrderedDict with the n last updates of nyaa.pantsu.cat
+     Returns an array of dicts with the n last updates of Nyaa.si
     '''
-    def news(n):
-        nyaa_baseurl = "https://nyaa.pantsu.cat/feed"
+    def news(number_of_results):
+        r = requests.get("http://nyaa.pantsu.cat/")
+        soup = BeautifulSoup(r.text, 'html.parser')
+        rows = soup.select('table tr')
 
-        request  = requests.get(nyaa_baseurl)
-        response = xmltodict.parse(request.text)
-
-        results = response['rss']['channel']['item']
-
-        return results[:n]
+        return utils.parse_pantsu(rows, limit=number_of_results)
