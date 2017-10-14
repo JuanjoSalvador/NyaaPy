@@ -7,4 +7,3 @@ __copyright__ = '2017 Juanjo Salvador'
 __license__   = 'MIT license'
 
 from NyaaPy.nyaa import Nyaa
-from NyaaPy.nyaapantsu import NyaaPantsu

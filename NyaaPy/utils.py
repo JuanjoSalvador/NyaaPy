@@ -4,7 +4,7 @@
 
 class Utils():
 
-    def get_categories(b):
+    def nyaa_categories(b):
         c = b.replace('/?c=', '')
         cats = c.split('_')
 
@@ -88,7 +88,7 @@ class Utils():
 
                 try:
                     torrent = {
-                        'category': Utils.get_categories(block[0]),
+                        'category': Utils.nyaa_categories(block[0]),
                         'url': "http://nyaa.si{}".format(block[1]),
                         'name': block[2],
                         'download_url': "http://nyaa.si{}".format(block[4]),
