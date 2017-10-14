@@ -1,6 +1,6 @@
 # NyaaPy
 
-Unofficial Python module to search into Nyaa.si and nyaa.pantsu.cat.
+Unofficial Python module to search into Nyaa.si
 
 Supports Python 3+
 
@@ -23,7 +23,7 @@ Install it using pip.
 ## Example
 
 ```python
-    from NyaaPy import Nyaa, NyaaPantsu
+    from NyaaPy import Nyaa
 
     nyaa_query = Nyaa.search(keyword='koe no katachi 1080', category=1, subcategory=0, filters=0, page=0)
 
