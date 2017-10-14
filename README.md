@@ -83,6 +83,8 @@ Parameters:
 
 List of available categories and subcategories:
 
+0. All categories and subcategories
+
 1. Anime.
 
     1.1 - Anime Music Video
