@@ -51,11 +51,11 @@ Returns a list of dicts with the search results.
 
 Parameters:
 
-* **keyword**: String. Keyword for the search query.
-* **category**: Integer.
-* **subcategory**: Integer. 
-* **filters**: Integer. 
-* **page**: Integer.
+* **keyword**: String. Keyword for the search query. Mandatory.
+* **category**: Integer. Optional.
+* **subcategory**: Integer. Optional.
+* **filters**: Integer. Optional.
+* **page**: Integer. Optional.
 
 `page` must be between 0 and 1000.
 

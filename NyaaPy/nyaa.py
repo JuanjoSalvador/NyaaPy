@@ -6,7 +6,13 @@ class Nyaa():
     '''
      Return a list of dicts with the results of the query.
     '''
-    def search(keyword, category, subcategory, filters, page):
+    def search(keyword, **kwargs):
+
+        category = kwargs.get('category', 0)
+        subcategory = kwargs.get('subcategory', 0)
+        filters = kwargs.get('filters', 0)
+        page = kwargs.get('page', 0)
+
         if page > 0:
             r = requests.get("http://nyaa.si/?f={}&c={}_{}&q={}&p={}".format(filters, category, subcategory, keyword, page))
         else:
@@ -30,4 +36,4 @@ class Nyaa():
         soup = BeautifulSoup(r.text, 'html.parser')
         rows = soup.select('table tr')
 
-        return utils.parse_nyaa(rows, limit=number_of_results)
+        return utils.parse_nyaa(rows, limit=number_of_results + 1)

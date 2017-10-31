@@ -1,31 +1,12 @@
-from NyaaPy import Nyaa, NyaaPantsu
+from NyaaPy import Nyaa
 
 # Nyaa.si results
-def nyaa_search():
-    try:
-        nyaa_query = Nyaa.search(keyword='koe no katachi 1080', category=1, subcategory=0, page=0)
+nyaa_query = Nyaa.search()
 
-        for nyaa in nyaa_query:
-            print(nyaa)
-    except TypeError as te:
-        print(te)
+nyaa_news = Nyaa.news(5)
 
-def nyaa_news():
-    news = Nyaa.news(number_of_results=5)
-    for n in news:
-        print(n)
-
-# Nyaa.pantsu.cat results
-def pantsu_search():
-    pantsu_query = NyaaPantsu.search('new game!!')
-
-
-def pantsu_news():
-    print(NyaaPantsu.news(1))
-
-# Uncomment whatever you want to test
-
-#nyaa_search()
-#pantsu_search()
-#nyaa_news()
-pantsu_news()
+if len(nyaa_query) > 0:
+    for result in nyaa_query:
+        print(result['name'])
+else:
+    print('Nothing here!')
