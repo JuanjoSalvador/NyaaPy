@@ -2,7 +2,7 @@ import requests
 from bs4 import BeautifulSoup
 from NyaaPy.utils import Utils as utils
 
-class Nyaa():
+class Nyaa:
     '''
      Return a list of dicts with the results of the query.
     '''
@@ -14,9 +14,9 @@ class Nyaa():
         page = kwargs.get('page', 0)
 
         if page > 0:
-            r = requests.get("http://nyaa.si/?f={}&c={}_{}&q={}&p={}".format(filters, category, subcategory, keyword, page))
+            r = requests.get("{}/?f={}&c={}_{}&q={}&p={}".format("http://nyaa.si", filters, category, subcategory, keyword, page))
         else:
-            r = requests.get("http://nyaa.si/?f={}&c={}_{}&q={}".format(filters, category, subcategory, keyword))
+            r = requests.get("{}/?f={}&c={}_{}&q={}".format("http://nyaa.si", filters, category, subcategory, keyword))
 
         soup = BeautifulSoup(r.text, 'html.parser')
         rows = soup.select('table tr')

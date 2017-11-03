@@ -4,19 +4,15 @@
 
 # NyaaPy
 
-Unofficial Python module to search into Nyaa.si
+Unofficial Python module for Nyaa.si (WebScraping) and Nyaa.pantsu.cat (API wrapper)
 
 Supports Python 3+
 
+Full docs available on [repo Wiki](https://github.com/JuanjoSalvador/NyaaPy/wiki)
+
 * [Installation](#installation)
 * [Example](#example)
-* [Methods](#methods)
-    * [search()](#search)
-    * [news()](#news)
-* [Categories and subcategories](#categories-and-subcategories)
-* [Contributions and development](#contributons-and-development)
 * [License](#license)
-
 
 ## Installation
 
@@ -24,7 +20,7 @@ Install it using pip.
 
     pip install nyaapy
 
-## Example
+## Nyaa.si Example
 
 ```python
     from NyaaPy import Nyaa
@@ -155,8 +151,6 @@ At this moment there isn't an official Nyaa.si API, so we only can make requests
     ```
 
 3. If you are ussing a clonned repo, please create a new branch named `patch-<username>-<version>`. Example: `patch-juanjosalvador-0.2`
-
-4. Always use the code into `src` folder, never the package.
 
 ## License
 

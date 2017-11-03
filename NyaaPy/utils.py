@@ -105,3 +105,25 @@ class Utils():
                     pass
         
         return torrents
+
+    def query_builder(q, params):
+        available_params = ["category", "page", "limit", "userID", "fromID", "status", "maxage", "toDate", "fromDate",\
+                            "dateType", "minSize", "maxSize", "sizeType", "sort", "order", "lang"]
+        query = "?q={}".format(q.replace(" ", "+"))
+
+        for param, value in params.items():
+            if param in available_params:
+                if param != "category" and param != "status" and param != "lang":
+                    query += "&{}={}".format(param, value)
+                else:
+                    if param == "category":
+                        query += "&c={}_{}".format(value[0], value[1])
+                    
+                    if param == "status":
+                        query += "&s={}".format(value)
+        
+                    if param == "lang":
+                        for lang in value:
+                            query += "&lang={}".format(lang)
+        
+        return query

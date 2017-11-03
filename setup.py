@@ -1,7 +1,7 @@
 from setuptools import setup, find_packages
 
 setup(name='nyaapy',
-      version='0.4.3',
+      version='0.5.0',
       url='https://github.com/juanjosalvador/nyaapy',
       download_url = 'https://github.com/juanjosalvador/nyaapy/archive/0.1.tar.gz',
       license='MIT',
