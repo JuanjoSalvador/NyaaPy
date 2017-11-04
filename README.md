@@ -2,7 +2,7 @@
 ![](https://img.shields.io/badge/Python-3%2B-green.svg)
 ![](https://img.shields.io/badge/Nyaa.si-supported-orange.svg)
 
-# NyaaPy
+![NyaaPy](https://github.com/JuanjoSalvador/NyaaPy/blob/master/nyaapy-logo.png?raw=true)
 
 Unofficial Python module for Nyaa.si (WebScraping) and Nyaa.pantsu.cat (API wrapper)
 
