@@ -11,10 +11,8 @@ Unofficial Python module for Nyaa.si (WebScraping) and Nyaa.pantsu.cat (API wrap
 
 Supports Python 3+
 
-Full docs available on [repo Wiki](https://github.com/JuanjoSalvador/NyaaPy/wiki)
-
 * [Installation](#installation)
-* [Example](#example)
+* [Docs](https://github.com/JuanjoSalvador/NyaaPy/wiki)
 * [License](#license)
 
 ## Installation
@@ -22,64 +20,6 @@ Full docs available on [repo Wiki](https://github.com/JuanjoSalvador/NyaaPy/wiki
 Install it using pip.
 
     pip install nyaapy
-
-## Nyaa.si Example
-
-```python
-    from NyaaPy import Nyaa
-
-    nyaa_query = Nyaa.search(keyword='koe no katachi 1080', category=1, subcategory=0, filters=0, page=0)
-
-    nyaa_news = Nyaa.news(5)
-
-    if len(nyaa_query) > 0:
-        for result in nyaa_query:
-            print(result['name'])
-    else:
-        print('Nothing here!')
-
-    for new in nyaa_news:
-        print(new['name'])
-```
-
-## Methods
-
-### search()
-
-Returns a list of dicts with the search results.
-
-Parameters:
-
-* **keyword**: String. Keyword for the search query. Mandatory.
-* **category**: Integer. Optional.
-* **subcategory**: Integer. Optional.
-* **filters**: Integer. Optional.
-* **page**: Integer. Optional.
-
-`page` must be between 0 and 1000.
-
-#### Dict returned for Nyaa.si
-
-```python
-    'category': "Anime - English-translated",
-    'url': "https://nyaa.si/view/968600",
-    'name': "[HorribleSubs] Shoukoku no Altair - 14 [720p].mkv",
-    'download_url': "https://nyaa.si/download/968600.torrent",
-    'magnet': <magnet torrent URI>
-    'size': "317.2 MiB",
-    'date': "2017-10-13 20:16",
-    'seeders': "538",
-    'leechers': "286",
-    'completed_downloads': "852"
-```
-
-### news()
-
-Parameters:
-
-* **number_of_results**: Integer
-
-`number_of_results` must be between 1 and 75.
 
 
 ## Categories and subcategories
