@@ -21,13 +21,16 @@ class Nyaa:
         soup = BeautifulSoup(r.text, 'html.parser')
         rows = soup.select('table tr')
 
-        results = {}
+        return utils.parse_nyaa(rows, limit=None)
 
-        if rows:
-            results = utils.parse_nyaa(rows, limit=None)
 
-        return results
-    
+    def get(url):
+        r = requests.get("https://nyaa.si/view/975533")
+        soup = BeautifulSoup(r.text, 'html.parser')
+        content = soup.findAll("div", { "class": "panel panel-default", "id": None})
+
+        return utils.parse_single(content)
+
     '''
      Returns an array of dicts with the n last updates of Nyaa.si
     '''
