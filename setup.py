@@ -3,7 +3,7 @@ from setuptools import setup, find_packages
 setup(name='nyaapy',
       version='0.6.0',
       url='https://github.com/juanjosalvador/nyaapy',
-      download_url = 'https://github.com/juanjosalvador/nyaapy/archive/0.1.tar.gz',
+      download_url = 'https://github.com/JuanjoSalvador/NyaaPy/archive/v0.6.0.tar.gz',
       license='MIT',
       author='Juanjo Salvador',
       author_email='juanjosalvador@netc.eu',
