@@ -142,6 +142,82 @@ class Utils:
 
         return torrent
 
+    def parse_sukebei(table_rows, limit):
+        if limit == 0:
+            limit = len(table_rows)
+
+        torrents = []
+
+        for row in table_rows[:limit]:
+                block = []
+
+                for td in row.find_all('td'):
+                    if td.find_all('a'):
+                        for link in td.find_all('a'):
+                            if link.get('href')[-9:] != '#comments':
+                                block.append(link.get('href'))
+                                if link.text.rstrip():
+                                    block.append(link.text)
+
+                    if td.text.rstrip():
+                        block.append(td.text.rstrip())
+
+                try:
+                    torrent = {
+                        'id': block[1].replace("/view/", ""),
+                        'category': Utils.sukebei_categories(block[0]),
+                        'url': "http://sukebei.nyaa.si{}".format(block[1]),
+                        'name': block[2],
+                        'download_url': "http://sukebei.nyaa.si{}".format(block[4]),
+                        'magnet': block[5],
+                        'size': block[6],
+                        'date': block[7],
+                        'seeders': block[8],
+                        'leechers': block[9],
+                        'completed_downloads': block[10],
+                    }
+                
+                    torrents.append(torrent)
+                except IndexError as ie:
+                    pass
+        
+        return torrents
+
+    def sukebei_categories(b):
+        c = b.replace('/?c=', '')
+        cats = c.split('_')
+
+        cat = cats[0]
+        subcat = cats[1]
+
+        categories = {
+            "1": {
+                "name": "Art",
+                "subcats": {
+                    "1": "Anime",
+                    "2": "Doujinshi",
+                    "3": "Games",
+                    "4": "Manga",
+                    "5": "Pictures",
+                }
+            },
+            "2": {
+                "name": "Real Life",
+                "subcats": {
+                    "1": "Photobooks & Pictures",
+                    "2": "Videos"
+                }
+            }
+        }
+        
+        try:
+            category_name = "{} - {}".format(categories[cat]['name'], categories[cat]['subcats'][subcat])
+        except:
+            pass
+
+        return category_name
+
+    # Pantsu Utils
     def query_builder(q, params):
         available_params = ["category", "page", "limit", "userID", "fromID", "status", "maxage", "toDate", "fromDate",\
                             "dateType", "minSize", "maxSize", "sizeType", "sort", "order", "lang"]

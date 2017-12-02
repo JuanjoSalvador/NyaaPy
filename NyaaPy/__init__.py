@@ -8,3 +8,4 @@ __license__   = 'MIT license'
 
 from NyaaPy.nyaa import Nyaa
 from NyaaPy.pantsu import Pantsu
+from NyaaPy.sukebei import SukebeiNyaa, SukebeiPantsu
