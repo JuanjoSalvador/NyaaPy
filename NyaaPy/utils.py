@@ -2,6 +2,8 @@
     Module utils
 '''
 
+import re
+
 class Utils:
 
     def nyaa_categories(b):
@@ -69,6 +71,8 @@ class Utils:
         return category_name
 
     def parse_nyaa(table_rows, limit):
+        if limit == 0:
+            limit = len(table_rows)
 
         torrents = []
 
@@ -88,6 +92,7 @@ class Utils:
 
                 try:
                     torrent = {
+                        'id': block[1].replace("/view/", ""),
                         'category': Utils.nyaa_categories(block[0]),
                         'url': "http://nyaa.si{}".format(block[1]),
                         'name': block[2],
@@ -121,18 +126,18 @@ class Utils:
             torrent_files.append(file.text)
 
 
-        torrent['title'] = content[0].find('h3', {"class": "panel-title"}).text.replace("\n", "")
+        torrent['title'] = re.sub('\n|\r|\t', '', content[0].find('h3', {"class": "panel-title"}).text.replace("\n", ""))
         torrent['category'] = data[0]
         torrent['uploader'] = data[2]
         torrent['uploader_profile'] = "https://nyaa.si/user/{}".format(data[2])
-        torrent['website'] = data[4]
+        torrent['website'] = re.sub('\t', '', data[4])
         torrent['size'] = data[6]
         torrent['date'] = data[1]
         torrent['seeders'] = data[3]
         torrent['leechers'] = data[5]
         torrent['completed'] = data[7]
         torrent['hash'] = data[8]
-        torrent['description'] = content[1].find('div', {'id': 'torrent-description'}).text
+        torrent['description'] = re.sub('\t', '', content[1].find('div', {'id': 'torrent-description'}).text)
         torrent['files'] = torrent_files
 
         return torrent

@@ -3,11 +3,7 @@ from bs4 import BeautifulSoup
 from NyaaPy.utils import Utils as utils
 
 class Nyaa:
-    '''
-     Return a list of dicts with the results of the query.
-    '''
     def search(keyword, **kwargs):
-
         category = kwargs.get('category', 0)
         subcategory = kwargs.get('subcategory', 0)
         filters = kwargs.get('filters', 0)
@@ -23,17 +19,19 @@ class Nyaa:
 
         return utils.parse_nyaa(rows, limit=None)
 
-
-    def get(url):
-        r = requests.get("https://nyaa.si/view/975533")
+    def get(id):
+        r = requests.get("http://nyaa.si/view/{}".format(id))
         soup = BeautifulSoup(r.text, 'html.parser')
-        content = soup.findAll("div", { "class": "panel panel-default", "id": None})
-
+        content = soup.findAll("div", { "class": "panel", "id": None})
+        
         return utils.parse_single(content)
 
-    '''
-     Returns an array of dicts with the n last updates of Nyaa.si
-    '''
+    def get_user(username):
+        r = requests.get("http://nyaa.si/user/{}".format(username))
+        soup = BeautifulSoup(r.text, 'html.parser')
+
+        return utils.parse_nyaa(soup.select('table tr'), limit=None)
+
     def news(number_of_results):
         r = requests.get("http://nyaa.si/")
         soup = BeautifulSoup(r.text, 'html.parser')

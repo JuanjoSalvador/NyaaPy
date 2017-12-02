@@ -5,7 +5,6 @@ class Pantsu:
 
 # Torrents - GET
     def search(keyword, **kwargs):
-        print(utils.query_builder(keyword, kwargs))
         request = requests.get("{}/search{}".format("https://nyaa.pantsu.cat/api", utils.query_builder(keyword, kwargs)))
         
         return request.json()
