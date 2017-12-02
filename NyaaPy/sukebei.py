@@ -38,3 +38,37 @@ class SukebeiNyaa:
         rows = soup.select('table tr')
 
         return utils.parse_sukebei(rows, limit=number_of_results + 1)
+
+class SukebeiPantsu:
+    BASE_URL = "https://sukebei.pantsu.cat/api"
+
+    # Torrents - GET
+    def search(keyword, **kwargs):
+        request = requests.get("{}/search{}".format(SukebeiPantsu.BASE_URL, utils.query_builder(keyword, kwargs)))
+        
+        return request.json()
+
+    def view(item_id):
+        request = requests.get("{}/view/{}".format(SukebeiPantsu.BASE_URL, item_id))
+
+        return request.json()
+
+    # Torrents - POST
+
+    def upload():
+        return "Work in progress!"
+
+    def update():
+        return "Work in progress!"
+
+    # Users
+
+    def login(username, password):
+        login = requests.post("{}/login/".format(SukebeiPantsu.BASE_URL), data={'username': username, 'password': password})
+
+        return login.json()
+
+    def profile(user_id):
+        profile = requests.post("{}/profile/".format(SukebeiPantsu.BASE_URL), data={'id': user_id})
+
+        return profile.json()
