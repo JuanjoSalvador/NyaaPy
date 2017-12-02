@@ -2,7 +2,9 @@
     Module utils
 '''
 
-class Utils():
+import re
+
+class Utils:
 
     def nyaa_categories(b):
         c = b.replace('/?c=', '')
@@ -69,6 +71,8 @@ class Utils():
         return category_name
 
     def parse_nyaa(table_rows, limit):
+        if limit == 0:
+            limit = len(table_rows)
 
         torrents = []
 
@@ -88,6 +92,7 @@ class Utils():
 
                 try:
                     torrent = {
+                        'id': block[1].replace("/view/", ""),
                         'category': Utils.nyaa_categories(block[0]),
                         'url': "http://nyaa.si{}".format(block[1]),
                         'name': block[2],
@@ -105,6 +110,37 @@ class Utils():
                     pass
         
         return torrents
+
+    def parse_single(content):
+        torrent = {}
+        data = []
+        torrent_files = []
+
+        for row in content[0].find_all('div', {'class': 'row'}):
+            for div in row.find_all('div', {'class': 'col-md-5'}):
+                data.append(div.text.replace("\n", ""))
+
+        files = content[2].find('div', {'class', 'torrent-file-list'}).find_all('li')
+
+        for file in files:
+            torrent_files.append(file.text)
+
+
+        torrent['title'] = re.sub('\n|\r|\t', '', content[0].find('h3', {"class": "panel-title"}).text.replace("\n", ""))
+        torrent['category'] = data[0]
+        torrent['uploader'] = data[2]
+        torrent['uploader_profile'] = "https://nyaa.si/user/{}".format(data[2])
+        torrent['website'] = re.sub('\t', '', data[4])
+        torrent['size'] = data[6]
+        torrent['date'] = data[1]
+        torrent['seeders'] = data[3]
+        torrent['leechers'] = data[5]
+        torrent['completed'] = data[7]
+        torrent['hash'] = data[8]
+        torrent['description'] = re.sub('\t', '', content[1].find('div', {'id': 'torrent-description'}).text)
+        torrent['files'] = torrent_files
+
+        return torrent
 
     def query_builder(q, params):
         available_params = ["category", "page", "limit", "userID", "fromID", "status", "maxage", "toDate", "fromDate",\
