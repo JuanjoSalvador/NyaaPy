@@ -1,4 +1,6 @@
-![NyaaPy](https://github.com/JuanjoSalvador/NyaaPy/blob/master/nyaapy-logo.png?raw=true)
+<p align="center">
+<img src="https://github.com/JuanjoSalvador/NyaaPy/blob/master/nyaapy-logo.png?raw=true" />
+</p>
 
 ![](https://img.shields.io/badge/Python-3.5-green.svg)
 ![](https://img.shields.io/badge/Nyaa.si-supported-green.svg)
