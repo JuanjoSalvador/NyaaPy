@@ -4,8 +4,6 @@
 ![](https://img.shields.io/badge/Nyaa.si-supported-green.svg)
 ![](https://img.shields.io/badge/NyaaPantsu-supported-green.svg)
 [![GitHub license](https://img.shields.io/badge/license-MIT-blue.svg)](https://raw.githubusercontent.com/JuanjoSalvador/NyaaPy/master/LICENSE.txt)
-![](https://img.shields.io/badge/Version-0.5.0-blue.svg)
-
 
 Unofficial Python module for Nyaa.si (WebScraping) and Nyaa.pantsu.cat (API wrapper)
 
