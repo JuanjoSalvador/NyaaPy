@@ -1,13 +1,13 @@
 from setuptools import setup, find_packages
 
 setup(name='nyaapy',
-      version='0.6.1',
+      version='0.6.2',
       install_requires = [
             "requests",
-            "bs4",
+            "beautifulsoup4",
       ],
       url='https://github.com/juanjosalvador/nyaapy',
-      download_url = 'https://github.com/juanjosalvador/nyaapy/archive/0.6.1.tar.gz',
+      download_url = 'https://github.com/juanjosalvador/nyaapy/archive/0.6.2.tar.gz',
       license='MIT',
       author='Juanjo Salvador',
       author_email='juanjosalvador@netc.eu',
