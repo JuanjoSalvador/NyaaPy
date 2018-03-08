@@ -2,3 +2,5 @@ build/
 dist/
 nyaapy.egg-info
 .vscode
+env/
+*.pyc
