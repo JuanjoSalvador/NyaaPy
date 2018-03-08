@@ -5,8 +5,7 @@
 import re
 
 class Utils:
-
-    def nyaa_categories(b):
+    def nyaa_categories(self, b):
         c = b.replace('/?c=', '')
         cats = c.split('_')
 
@@ -70,7 +69,7 @@ class Utils:
 
         return category_name
 
-    def parse_nyaa(table_rows, limit):
+    def parse_nyaa(self, table_rows, limit):
         if limit == 0:
             limit = len(table_rows)
 
@@ -93,7 +92,7 @@ class Utils:
                 try:
                     torrent = {
                         'id': block[1].replace("/view/", ""),
-                        'category': Utils.nyaa_categories(block[0]),
+                        'category': Utils.nyaa_categories(self, block[0]),
                         'url': "http://nyaa.si{}".format(block[1]),
                         'name': block[2],
                         'download_url': "http://nyaa.si{}".format(block[4]),
@@ -111,7 +110,7 @@ class Utils:
         
         return torrents
 
-    def parse_single(content):
+    def parse_single(self, content):
         torrent = {}
         data = []
         torrent_files = []
@@ -142,7 +141,7 @@ class Utils:
 
         return torrent
 
-    def parse_sukebei(table_rows, limit):
+    def parse_sukebei(self, table_rows, limit):
         if limit == 0:
             limit = len(table_rows)
 
@@ -165,7 +164,7 @@ class Utils:
                 try:
                     torrent = {
                         'id': block[1].replace("/view/", ""),
-                        'category': Utils.sukebei_categories(block[0]),
+                        'category': Utils.sukebei_categories(self, block[0]),
                         'url': "http://sukebei.nyaa.si{}".format(block[1]),
                         'name': block[2],
                         'download_url': "http://sukebei.nyaa.si{}".format(block[4]),
@@ -183,7 +182,7 @@ class Utils:
         
         return torrents
 
-    def sukebei_categories(b):
+    def sukebei_categories(self, b):
         c = b.replace('/?c=', '')
         cats = c.split('_')
 
@@ -218,7 +217,7 @@ class Utils:
         return category_name
 
     # Pantsu Utils
-    def query_builder(q, params):
+    def query_builder(self, q, params):
         available_params = ["category", "page", "limit", "userID", "fromID", "status", "maxage", "toDate", "fromDate",\
                             "dateType", "minSize", "maxSize", "sizeType", "sort", "order", "lang"]
         query = "?q={}".format(q.replace(" ", "+"))
