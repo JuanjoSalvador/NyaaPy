@@ -77,37 +77,32 @@ class Utils:
         torrents = []
 
         for row in table_rows[:limit]:
-                block = []
+            block = []
 
-                for td in row.find_all('td'):
-                    if td.find_all('a'):
-                        for link in td.find_all('a'):
-                            if link.get('href')[-9:] != '#comments':
-                                block.append(link.get('href'))
-                                if link.text.rstrip():
-                                    block.append(link.text)
+            for td in row.find_all('td'):
+                for link in td.find_all('a'):
+                    if link.get('href')[-9:] != '#comments':
+                        block.append(link.get('href'))
+                        block.append(link.text.rstrip())
 
-                    if td.text.rstrip():
-                        block.append(td.text.rstrip())
+                if td.text.rstrip():
+                    block.append(td.text.rstrip())
 
-                try:
-                    torrent = {
-                        'id': block[1].replace("/view/", ""),
-                        'category': Utils.nyaa_categories(block[0]),
-                        'url': "http://nyaa.si{}".format(block[1]),
-                        'name': block[2],
-                        'download_url': "http://nyaa.si{}".format(block[4]),
-                        'magnet': block[5],
-                        'size': block[6],
-                        'date': block[7],
-                        'seeders': block[8],
-                        'leechers': block[9],
-                        'completed_downloads': block[10],
-                    }
-                
-                    torrents.append(torrent)
-                except IndexError as ie:
-                    pass
+            torrent = {
+                'id': block[1].replace("/view/", ""),
+                'category': Utils.nyaa_categories(block[0]),
+                'url': "http://nyaa.si{}".format(block[1]),
+                'name': block[2],
+                'download_url': "http://nyaa.si{}".format(block[4]),
+                'magnet': block[5],
+                'size': block[6],
+                'date': block[7],
+                'seeders': block[8],
+                'leechers': block[9],
+                'completed_downloads': block[10],
+            }
+        
+            torrents.append(torrent)
         
         return torrents
 
@@ -149,37 +144,32 @@ class Utils:
         torrents = []
 
         for row in table_rows[:limit]:
-                block = []
+            block = []
 
-                for td in row.find_all('td'):
-                    if td.find_all('a'):
-                        for link in td.find_all('a'):
-                            if link.get('href')[-9:] != '#comments':
-                                block.append(link.get('href'))
-                                if link.text.rstrip():
-                                    block.append(link.text)
+            for td in row.find_all('td'):
+                for link in td.find_all('a'):
+                    if link.get('href')[-9:] != '#comments':
+                        block.append(link.get('href'))
+                        block.append(link.text.rstrip())
 
-                    if td.text.rstrip():
-                        block.append(td.text.rstrip())
-
-                try:
-                    torrent = {
-                        'id': block[1].replace("/view/", ""),
-                        'category': Utils.sukebei_categories(block[0]),
-                        'url': "http://sukebei.nyaa.si{}".format(block[1]),
-                        'name': block[2],
-                        'download_url': "http://sukebei.nyaa.si{}".format(block[4]),
-                        'magnet': block[5],
-                        'size': block[6],
-                        'date': block[7],
-                        'seeders': block[8],
-                        'leechers': block[9],
-                        'completed_downloads': block[10],
-                    }
+                if td.text.rstrip():
+                    block.append(td.text.rstrip())
                 
-                    torrents.append(torrent)
-                except IndexError as ie:
-                    pass
+            torrent = {
+                'id': block[1].replace("/view/", ""),
+                'category': Utils.sukebei_categories(block[0]),
+                'url': "http://sukebei.nyaa.si{}".format(block[1]),
+                'name': block[2],
+                'download_url': "http://sukebei.nyaa.si{}".format(block[4]),
+                'magnet': block[5],
+                'size': block[6],
+                'date': block[7],
+                'seeders': block[8],
+                'leechers': block[9],
+                'completed_downloads': block[10],
+            }
+        
+            torrents.append(torrent)
         
         return torrents
 
@@ -227,15 +217,14 @@ class Utils:
             if param in available_params:
                 if param != "category" and param != "status" and param != "lang":
                     query += "&{}={}".format(param, value)
-                else:
-                    if param == "category":
-                        query += "&c={}_{}".format(value[0], value[1])
-                    
-                    if param == "status":
-                        query += "&s={}".format(value)
-        
-                    if param == "lang":
-                        for lang in value:
-                            query += "&lang={}".format(lang)
+                elif param == "category":
+                    query += "&c={}_{}".format(value[0], value[1])
+                
+                elif param == "status":
+                    query += "&s={}".format(value)
+    
+                elif param == "lang":
+                    for lang in value:
+                        query += "&lang={}".format(lang)
         
         return query
