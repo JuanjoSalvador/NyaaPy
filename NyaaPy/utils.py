@@ -5,8 +5,7 @@
 import re
 
 class Utils:
-
-    def nyaa_categories(b):
+    def nyaa_categories(self, b):
         c = b.replace('/?c=', '')
         cats = c.split('_')
 
@@ -70,13 +69,14 @@ class Utils:
 
         return category_name
 
-    def parse_nyaa(table_rows, limit):
+    def parse_nyaa(self, table_rows, limit):
         if limit == 0:
             limit = len(table_rows)
 
         torrents = []
 
         for row in table_rows[:limit]:
+<<<<<<< HEAD
             block = []
 
             for td in row.find_all('td'):
@@ -103,10 +103,43 @@ class Utils:
             }
         
             torrents.append(torrent)
+=======
+                block = []
+
+                for td in row.find_all('td'):
+                    if td.find_all('a'):
+                        for link in td.find_all('a'):
+                            if link.get('href')[-9:] != '#comments':
+                                block.append(link.get('href'))
+                                if link.text.rstrip():
+                                    block.append(link.text)
+
+                    if td.text.rstrip():
+                        block.append(td.text.rstrip())
+
+                try:
+                    torrent = {
+                        'id': block[1].replace("/view/", ""),
+                        'category': Utils.nyaa_categories(self, block[0]),
+                        'url': "http://nyaa.si{}".format(block[1]),
+                        'name': block[2],
+                        'download_url': "http://nyaa.si{}".format(block[4]),
+                        'magnet': block[5],
+                        'size': block[6],
+                        'date': block[7],
+                        'seeders': block[8],
+                        'leechers': block[9],
+                        'completed_downloads': block[10],
+                    }
+                
+                    torrents.append(torrent)
+                except IndexError as ie:
+                    pass
+>>>>>>> 8df5b27bd43ffbfacbc58124f2082370e9287a92
         
         return torrents
 
-    def parse_single(content):
+    def parse_single(self, content):
         torrent = {}
         data = []
         torrent_files = []
@@ -137,13 +170,14 @@ class Utils:
 
         return torrent
 
-    def parse_sukebei(table_rows, limit):
+    def parse_sukebei(self, table_rows, limit):
         if limit == 0:
             limit = len(table_rows)
 
         torrents = []
 
         for row in table_rows[:limit]:
+<<<<<<< HEAD
             block = []
 
             for td in row.find_all('td'):
@@ -154,6 +188,35 @@ class Utils:
 
                 if td.text.rstrip():
                     block.append(td.text.rstrip())
+=======
+                block = []
+
+                for td in row.find_all('td'):
+                    if td.find_all('a'):
+                        for link in td.find_all('a'):
+                            if link.get('href')[-9:] != '#comments':
+                                block.append(link.get('href'))
+                                if link.text.rstrip():
+                                    block.append(link.text)
+
+                    if td.text.rstrip():
+                        block.append(td.text.rstrip())
+
+                try:
+                    torrent = {
+                        'id': block[1].replace("/view/", ""),
+                        'category': Utils.sukebei_categories(self, block[0]),
+                        'url': "http://sukebei.nyaa.si{}".format(block[1]),
+                        'name': block[2],
+                        'download_url': "http://sukebei.nyaa.si{}".format(block[4]),
+                        'magnet': block[5],
+                        'size': block[6],
+                        'date': block[7],
+                        'seeders': block[8],
+                        'leechers': block[9],
+                        'completed_downloads': block[10],
+                    }
+>>>>>>> 8df5b27bd43ffbfacbc58124f2082370e9287a92
                 
             torrent = {
                 'id': block[1].replace("/view/", ""),
@@ -173,7 +236,7 @@ class Utils:
         
         return torrents
 
-    def sukebei_categories(b):
+    def sukebei_categories(self, b):
         c = b.replace('/?c=', '')
         cats = c.split('_')
 
@@ -208,7 +271,7 @@ class Utils:
         return category_name
 
     # Pantsu Utils
-    def query_builder(q, params):
+    def query_builder(self, q, params):
         available_params = ["category", "page", "limit", "userID", "fromID", "status", "maxage", "toDate", "fromDate",\
                             "dateType", "minSize", "maxSize", "sizeType", "sort", "order", "lang"]
         query = "?q={}".format(q.replace(" ", "+"))
