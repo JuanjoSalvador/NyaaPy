@@ -148,7 +148,6 @@ class Utils:
         torrents = []
 
         for row in table_rows[:limit]:
-<<<<<<< HEAD
             block = []
 
             for td in row.find_all('td'):
@@ -159,20 +158,7 @@ class Utils:
 
                 if td.text.rstrip():
                     block.append(td.text.rstrip())
-=======
-                block = []
-
-                for td in row.find_all('td'):
-                    if td.find_all('a'):
-                        for link in td.find_all('a'):
-                            if link.get('href')[-9:] != '#comments':
-                                block.append(link.get('href'))
-                                if link.text.rstrip():
-                                    block.append(link.text)
-
-                    if td.text.rstrip():
-                        block.append(td.text.rstrip())
-
+                    
                 try:
                     torrent = {
                         'id': block[1].replace("/view/", ""),
@@ -187,24 +173,9 @@ class Utils:
                         'leechers': block[9],
                         'completed_downloads': block[10],
                     }
->>>>>>> 8df5b27bd43ffbfacbc58124f2082370e9287a92
-                
-            torrent = {
-                'id': block[1].replace("/view/", ""),
-                'category': Utils.sukebei_categories(block[0]),
-                'url': "http://sukebei.nyaa.si{}".format(block[1]),
-                'name': block[2],
-                'download_url': "http://sukebei.nyaa.si{}".format(block[4]),
-                'magnet': block[5],
-                'size': block[6],
-                'date': block[7],
-                'seeders': block[8],
-                'leechers': block[9],
-                'completed_downloads': block[10],
-            }
-        
-            torrents.append(torrent)
-        
+                    
+        torrents.append(torrent)
+  
         return torrents
 
     def sukebei_categories(self, b):
