@@ -5,8 +5,9 @@ from NyaaPy.utils import Utils
 
 utils = Utils()
 
+
 class Nyaa:
-    
+
     def __init__(self):
         self.URI = "http://nyaa.si"
 
@@ -23,9 +24,12 @@ class Nyaa:
             user_uri = ""
 
         if page > 0:
-            r = requests.get("{}/{}?f={}&c={}_{}&q={}&p={}".format(self.URI, user_uri, filters, category, subcategory, keyword, page))
+            r = requests.get("{}/{}?f={}&c={}_{}&q={}&p={}".format(
+                self.URI, user_uri, filters, category, subcategory, keyword,
+                page))
         else:
-            r = requests.get("{}/{}?f={}&c={}_{}&q={}".format(self.URI, user_uri, filters, category, subcategory, keyword))
+            r = requests.get("{}/{}?f={}&c={}_{}&q={}".format(
+                self.URI, user_uri, filters, category, subcategory, keyword))
 
         soup = BeautifulSoup(r.text, 'html.parser')
         rows = soup.select('table tr')
@@ -35,8 +39,8 @@ class Nyaa:
     def get(self, id):
         r = requests.get("{}/view/{}".format(self.URI, id))
         soup = BeautifulSoup(r.text, 'html.parser')
-        content = soup.findAll("div", { "class": "panel", "id": None})
-        
+        content = soup.findAll("div", {"class": "panel", "id": None})
+
         return utils.parse_single(content)
 
     def get_user(self, username):
