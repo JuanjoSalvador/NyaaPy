@@ -2,3 +2,4 @@ build/
 dist/
 nyaapy.egg-info
 .vscode
+/nyaa

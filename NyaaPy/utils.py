@@ -4,6 +4,7 @@
 
 import re
 
+
 class Utils:
 
     def nyaa_categories(b):
@@ -38,7 +39,7 @@ class Utils:
                     "3": "Raw"
                 }
             },
-            "4": { 
+            "4": {
                 "name": "Live Action",
                 "subcats": {
                     "1": "English-translated",
@@ -47,14 +48,14 @@ class Utils:
                     "4": "Raw"
                 }
             },
-            "5": { 
+            "5": {
                 "name": "Pictures",
                 "subcats": {
                     "1": "Graphics",
                     "2": "Photos"
                 }
             },
-            "6": { 
+            "6": {
                 "name": "Software",
                 "subcats": {
                     "1": "Applications",
@@ -62,9 +63,10 @@ class Utils:
                 }
             }
         }
-        
+
         try:
-            category_name = "{} - {}".format(categories[cat]['name'], categories[cat]['subcats'][subcat])
+            category_name = "{} - {}".format(
+                categories[cat]['name'], categories[cat]['subcats'][subcat])
         except:
             pass
 
@@ -77,38 +79,38 @@ class Utils:
         torrents = []
 
         for row in table_rows[:limit]:
-                block = []
+            block = []
 
-                for td in row.find_all('td'):
-                    if td.find_all('a'):
-                        for link in td.find_all('a'):
-                            if link.get('href')[-9:] != '#comments':
-                                block.append(link.get('href'))
-                                if link.text.rstrip():
-                                    block.append(link.text)
+            for td in row.find_all('td'):
+                if td.find_all('a'):
+                    for link in td.find_all('a'):
+                        if link.get('href')[-9:] != '#comments':
+                            block.append(link.get('href'))
+                            if link.text.rstrip():
+                                block.append(link.text)
 
-                    if td.text.rstrip():
-                        block.append(td.text.rstrip())
+                if td.text.rstrip():
+                    block.append(td.text.rstrip())
 
-                try:
-                    torrent = {
-                        'id': block[1].replace("/view/", ""),
-                        'category': Utils.nyaa_categories(block[0]),
-                        'url': "http://nyaa.si{}".format(block[1]),
-                        'name': block[2],
-                        'download_url': "http://nyaa.si{}".format(block[4]),
-                        'magnet': block[5],
-                        'size': block[6],
-                        'date': block[7],
-                        'seeders': block[8],
-                        'leechers': block[9],
-                        'completed_downloads': block[10],
-                    }
-                
-                    torrents.append(torrent)
-                except IndexError as ie:
-                    pass
-        
+            try:
+                torrent = {
+                    'id': block[1].replace("/view/", ""),
+                    'category': Utils.nyaa_categories(block[0]),
+                    'url': "http://nyaa.si{}".format(block[1]),
+                    'name': block[2],
+                    'download_url': "http://nyaa.si{}".format(block[4]),
+                    'magnet': block[5],
+                    'size': block[6],
+                    'date': block[7],
+                    'seeders': block[8],
+                    'leechers': block[9],
+                    'completed_downloads': block[10],
+                }
+
+                torrents.append(torrent)
+            except IndexError as ie:
+                pass
+
         return torrents
 
     def parse_single(content):
@@ -120,13 +122,14 @@ class Utils:
             for div in row.find_all('div', {'class': 'col-md-5'}):
                 data.append(div.text.replace("\n", ""))
 
-        files = content[2].find('div', {'class', 'torrent-file-list'}).find_all('li')
+        files = content[2].find(
+            'div', {'class', 'torrent-file-list'}).find_all('li')
 
         for file in files:
             torrent_files.append(file.text)
 
-
-        torrent['title'] = re.sub('\n|\r|\t', '', content[0].find('h3', {"class": "panel-title"}).text.replace("\n", ""))
+        torrent['title'] = re.sub('\n|\r|\t', '', content[0].find(
+            'h3', {"class": "panel-title"}).text.replace("\n", ""))
         torrent['category'] = data[0]
         torrent['uploader'] = data[2]
         torrent['uploader_profile'] = "https://nyaa.si/user/{}".format(data[2])
@@ -137,7 +140,8 @@ class Utils:
         torrent['leechers'] = data[5]
         torrent['completed'] = data[7]
         torrent['hash'] = data[8]
-        torrent['description'] = re.sub('\t', '', content[1].find('div', {'id': 'torrent-description'}).text)
+        torrent['description'] = re.sub('\t', '', content[1].find(
+            'div', {'id': 'torrent-description'}).text)
         torrent['files'] = torrent_files
 
         return torrent
@@ -149,38 +153,38 @@ class Utils:
         torrents = []
 
         for row in table_rows[:limit]:
-                block = []
+            block = []
 
-                for td in row.find_all('td'):
-                    if td.find_all('a'):
-                        for link in td.find_all('a'):
-                            if link.get('href')[-9:] != '#comments':
-                                block.append(link.get('href'))
-                                if link.text.rstrip():
-                                    block.append(link.text)
+            for td in row.find_all('td'):
+                if td.find_all('a'):
+                    for link in td.find_all('a'):
+                        if link.get('href')[-9:] != '#comments':
+                            block.append(link.get('href'))
+                            if link.text.rstrip():
+                                block.append(link.text)
 
-                    if td.text.rstrip():
-                        block.append(td.text.rstrip())
+                if td.text.rstrip():
+                    block.append(td.text.rstrip())
 
-                try:
-                    torrent = {
-                        'id': block[1].replace("/view/", ""),
-                        'category': Utils.sukebei_categories(block[0]),
-                        'url': "http://sukebei.nyaa.si{}".format(block[1]),
-                        'name': block[2],
-                        'download_url': "http://sukebei.nyaa.si{}".format(block[4]),
-                        'magnet': block[5],
-                        'size': block[6],
-                        'date': block[7],
-                        'seeders': block[8],
-                        'leechers': block[9],
-                        'completed_downloads': block[10],
-                    }
-                
-                    torrents.append(torrent)
-                except IndexError as ie:
-                    pass
-        
+            try:
+                torrent = {
+                    'id': block[1].replace("/view/", ""),
+                    'category': Utils.sukebei_categories(block[0]),
+                    'url': "http://sukebei.nyaa.si{}".format(block[1]),
+                    'name': block[2],
+                    'download_url': "http://sukebei.nyaa.si{}".format(block[4]),
+                    'magnet': block[5],
+                    'size': block[6],
+                    'date': block[7],
+                    'seeders': block[8],
+                    'leechers': block[9],
+                    'completed_downloads': block[10],
+                }
+
+                torrents.append(torrent)
+            except IndexError as ie:
+                pass
+
         return torrents
 
     def sukebei_categories(b):
@@ -209,9 +213,10 @@ class Utils:
                 }
             }
         }
-        
+
         try:
-            category_name = "{} - {}".format(categories[cat]['name'], categories[cat]['subcats'][subcat])
+            category_name = "{} - {}".format(
+                categories[cat]['name'], categories[cat]['subcats'][subcat])
         except:
             pass
 
@@ -219,7 +224,7 @@ class Utils:
 
     # Pantsu Utils
     def query_builder(q, params):
-        available_params = ["category", "page", "limit", "userID", "fromID", "status", "maxage", "toDate", "fromDate",\
+        available_params = ["category", "page", "limit", "userID", "fromID", "status", "maxage", "toDate", "fromDate",
                             "dateType", "minSize", "maxSize", "sizeType", "sort", "order", "lang"]
         query = "?q={}".format(q.replace(" ", "+"))
 
@@ -230,12 +235,25 @@ class Utils:
                 else:
                     if param == "category":
                         query += "&c={}_{}".format(value[0], value[1])
-                    
+
                     if param == "status":
                         query += "&s={}".format(value)
-        
+
                     if param == "lang":
                         for lang in value:
                             query += "&lang={}".format(lang)
-        
+
         return query
+
+    def data_builder(params):
+        available_params = ["username", "name", "category", "remake",
+                            "description", "status", "hidden", "website_link", "languages"]
+        post_data = {}
+        for param, value in params.items():
+            if param in available_params:
+                if param == 'category':
+                    post_data['c'] = "{}_{}".format(value[0], value[1])
+                else:
+                    post_data[param] = value
+
+        return post_data
