@@ -1,8 +1,5 @@
 import requests
-from NyaaPy.utils import Utils
-
-utils = Utils()
-
+from NyaaPy import utils
 
 class Pantsu:
 

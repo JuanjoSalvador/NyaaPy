@@ -1,6 +1,6 @@
 import requests
 from bs4 import BeautifulSoup
-from NyaaPy.utils import Utils as utils
+from NyaaPy import utils
 
 
 class SukebeiNyaa:

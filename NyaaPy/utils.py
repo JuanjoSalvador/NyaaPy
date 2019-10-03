@@ -1,103 +1,170 @@
-'''
-    Module utils
-'''
-
 import re
 
+def nyaa_categories(self, b):
+    c = b.replace('/?c=', '')
+    cats = c.split('_')
 
-class Utils:
-    def nyaa_categories(self, b):
-        c = b.replace('/?c=', '')
-        cats = c.split('_')
+    cat = cats[0]
+    subcat = cats[1]
 
-        cat = cats[0]
-        subcat = cats[1]
-
-        categories = {
-            "1": {
-                "name": "Anime",
-                "subcats": {
-                    "1": "Anime Music Video",
-                    "2": "English-translated",
-                    "3": "Non-English-translated",
-                    "4": "Raw"
-                }
-            },
-            "2": {
-                "name": "Audio",
-                "subcats": {
-                    "1": "Lossless",
-                    "2": "Lossy"
-                }
-            },
-            "3": {
-                "name": "Literature",
-                "subcats": {
-                    "1": "English-translated",
-                    "2": "Non-English-translated",
-                    "3": "Raw"
-                }
-            },
-            "4": {
-                "name": "Live Action",
-                "subcats": {
-                    "1": "English-translated",
-                    "2": "Idol/Promotional Video",
-                    "3": "Non-English-translated",
-                    "4": "Raw"
-                }
-            },
-            "5": {
-                "name": "Pictures",
-                "subcats": {
-                    "1": "Graphics",
-                    "2": "Photos"
-                }
-            },
-            "6": {
-                "name": "Software",
-                "subcats": {
-                    "1": "Applications",
-                    "2": "Games"
-                }
+    categories = {
+        "1": {
+            "name": "Anime",
+            "subcats": {
+                "1": "Anime Music Video",
+                "2": "English-translated",
+                "3": "Non-English-translated",
+                "4": "Raw"
+            }
+        },
+        "2": {
+            "name": "Audio",
+            "subcats": {
+                "1": "Lossless",
+                "2": "Lossy"
+            }
+        },
+        "3": {
+            "name": "Literature",
+            "subcats": {
+                "1": "English-translated",
+                "2": "Non-English-translated",
+                "3": "Raw"
+            }
+        },
+        "4": {
+            "name": "Live Action",
+            "subcats": {
+                "1": "English-translated",
+                "2": "Idol/Promotional Video",
+                "3": "Non-English-translated",
+                "4": "Raw"
+            }
+        },
+        "5": {
+            "name": "Pictures",
+            "subcats": {
+                "1": "Graphics",
+                "2": "Photos"
+            }
+        },
+        "6": {
+            "name": "Software",
+            "subcats": {
+                "1": "Applications",
+                "2": "Games"
             }
         }
+    }
+
+    try:
+        category_name = "{} - {}".format(
+            categories[cat]['name'], categories[cat]['subcats'][subcat])
+    except Exception:
+        pass
+
+    return category_name
+
+def parse_nyaa(self, table_rows, limit):
+    if limit == 0:
+        limit = len(table_rows)
+
+    torrents = []
+
+    for row in table_rows[:limit]:
+        block = []
+
+        for td in row.find_all('td'):
+            if td.find_all('a'):
+                for link in td.find_all('a'):
+                    if link.get('href')[-9:] != '#comments':
+                        block.append(link.get('href'))
+                        if link.text.rstrip():
+                            block.append(link.text)
+
+            if td.text.rstrip():
+                block.append(td.text.rstrip())
 
         try:
-            category_name = "{} - {}".format(
-                categories[cat]['name'], categories[cat]['subcats'][subcat])
-        except Exception:
+            torrent = {
+                'id': block[1].replace("/view/", ""),
+                'category': nyaa_categories(self, block[0]),
+                'url': "http://nyaa.si{}".format(block[1]),
+                'name': block[2],
+                'download_url': "http://nyaa.si{}".format(block[4]),
+                'magnet': block[5],
+                'size': block[6],
+                'date': block[7],
+                'seeders': block[8],
+                'leechers': block[9],
+                'completed_downloads': block[10],
+            }
+
+            torrents.append(torrent)
+        except IndexError as ie:
             pass
 
-        return category_name
+    return torrents
 
-    def parse_nyaa(self, table_rows, limit):
-        if limit == 0:
-            limit = len(table_rows)
+def parse_single(self, content):
+    torrent = {}
+    data = []
+    torrent_files = []
 
-        torrents = []
+    for row in content[0].find_all('div', {'class': 'row'}):
+        for div in row.find_all('div', {'class': 'col-md-5'}):
+            data.append(div.text.replace("\n", ""))
 
-        for row in table_rows[:limit]:
-            block = []
+    files = content[2].find('div',
+                            {'class', 'torrent-file-list'}).find_all('li')
 
-            for td in row.find_all('td'):
-                if td.find_all('a'):
-                    for link in td.find_all('a'):
-                        if link.get('href')[-9:] != '#comments':
-                            block.append(link.get('href'))
-                            if link.text.rstrip():
-                                block.append(link.text)
+    for file in files:
+        torrent_files.append(file.text)
 
-                if td.text.rstrip():
-                    block.append(td.text.rstrip())
+    torrent['title'] = re.sub('\n|\r|\t', '', content[0].find('h3', {
+        "class": "panel-title"}).text.replace("\n", ""))
+    torrent['category'] = data[0]
+    torrent['uploader'] = data[2]
+    torrent['uploader_profile'] = "https://nyaa.si/user/{}".format(data[2])
+    torrent['website'] = re.sub('\t', '', data[4])
+    torrent['size'] = data[6]
+    torrent['date'] = data[1]
+    torrent['seeders'] = data[3]
+    torrent['leechers'] = data[5]
+    torrent['completed'] = data[7]
+    torrent['hash'] = data[8]
+    torrent['description'] = re.sub('\t', '', content[1].find('div', {
+        'id': 'torrent-description'}).text)
+    torrent['files'] = torrent_files
+
+    return torrent
+
+def parse_sukebei(self, table_rows, limit):
+    if limit == 0:
+        limit = len(table_rows)
+
+    torrents = []
+
+    for row in table_rows[:limit]:
+        block = []
+
+        for td in row.find_all('td'):
+            for link in td.find_all('a'):
+                if link.get('href')[-9:] != '#comments':
+                    block.append(link.get('href'))
+                    block.append(link.text.rstrip())
+
+            if td.text.rstrip():
+                block.append(td.text.rstrip())
 
             try:
                 torrent = {
                     'id': block[1].replace("/view/", ""),
-                    'category': Utils.nyaa_categories(self, block[0]),
-                    'url': "http://nyaa.si{}".format(block[1]),
+                    'category': sukebei_categories(self, block[0]),
+                    'url': "http://sukebei.nyaa.si{}".format(block[1]),
                     'name': block[2],
-                    'download_url': "http://nyaa.si{}".format(block[4]),
+                    'download_url': "http://sukebei.nyaa.si{}".format(
+                        block[4]),
                     'magnet': block[5],
                     'size': block[6],
                     'date': block[7],
@@ -106,139 +173,66 @@ class Utils:
                     'completed_downloads': block[10],
                 }
 
-                torrents.append(torrent)
-            except IndexError as ie:
-                pass
+    torrents.append(torrent)
 
-        return torrents
+    return torrents
 
-    def parse_single(self, content):
-        torrent = {}
-        data = []
-        torrent_files = []
+def sukebei_categories(self, b):
+    c = b.replace('/?c=', '')
+    cats = c.split('_')
 
-        for row in content[0].find_all('div', {'class': 'row'}):
-            for div in row.find_all('div', {'class': 'col-md-5'}):
-                data.append(div.text.replace("\n", ""))
+    cat = cats[0]
+    subcat = cats[1]
 
-        files = content[2].find('div',
-                                {'class', 'torrent-file-list'}).find_all('li')
-
-        for file in files:
-            torrent_files.append(file.text)
-
-        torrent['title'] = re.sub('\n|\r|\t', '', content[0].find('h3', {
-            "class": "panel-title"}).text.replace("\n", ""))
-        torrent['category'] = data[0]
-        torrent['uploader'] = data[2]
-        torrent['uploader_profile'] = "https://nyaa.si/user/{}".format(data[2])
-        torrent['website'] = re.sub('\t', '', data[4])
-        torrent['size'] = data[6]
-        torrent['date'] = data[1]
-        torrent['seeders'] = data[3]
-        torrent['leechers'] = data[5]
-        torrent['completed'] = data[7]
-        torrent['hash'] = data[8]
-        torrent['description'] = re.sub('\t', '', content[1].find('div', {
-            'id': 'torrent-description'}).text)
-        torrent['files'] = torrent_files
-
-        return torrent
-
-    def parse_sukebei(self, table_rows, limit):
-        if limit == 0:
-            limit = len(table_rows)
-
-        torrents = []
-
-        for row in table_rows[:limit]:
-            block = []
-
-            for td in row.find_all('td'):
-                for link in td.find_all('a'):
-                    if link.get('href')[-9:] != '#comments':
-                        block.append(link.get('href'))
-                        block.append(link.text.rstrip())
-
-                if td.text.rstrip():
-                    block.append(td.text.rstrip())
-
-                try:
-                    torrent = {
-                        'id': block[1].replace("/view/", ""),
-                        'category': Utils.sukebei_categories(self, block[0]),
-                        'url': "http://sukebei.nyaa.si{}".format(block[1]),
-                        'name': block[2],
-                        'download_url': "http://sukebei.nyaa.si{}".format(
-                            block[4]),
-                        'magnet': block[5],
-                        'size': block[6],
-                        'date': block[7],
-                        'seeders': block[8],
-                        'leechers': block[9],
-                        'completed_downloads': block[10],
-                    }
-
-        torrents.append(torrent)
-
-        return torrents
-
-    def sukebei_categories(self, b):
-        c = b.replace('/?c=', '')
-        cats = c.split('_')
-
-        cat = cats[0]
-        subcat = cats[1]
-
-        categories = {
-            "1": {
-                "name": "Art",
-                "subcats": {
-                    "1": "Anime",
-                    "2": "Doujinshi",
-                    "3": "Games",
-                    "4": "Manga",
-                    "5": "Pictures",
-                }
-            },
-            "2": {
-                "name": "Real Life",
-                "subcats": {
-                    "1": "Photobooks & Pictures",
-                    "2": "Videos"
-                }
+    categories = {
+        "1": {
+            "name": "Art",
+            "subcats": {
+                "1": "Anime",
+                "2": "Doujinshi",
+                "3": "Games",
+                "4": "Manga",
+                "5": "Pictures",
+            }
+        },
+        "2": {
+            "name": "Real Life",
+            "subcats": {
+                "1": "Photobooks & Pictures",
+                "2": "Videos"
             }
         }
+    }
 
-        try:
-            category_name = "{} - {}".format(
-                categories[cat]['name'], categories[cat]['subcats'][subcat])
-        except Exception:
-            pass
+    try:
+        category_name = "{} - {}".format(
+            categories[cat]['name'], categories[cat]['subcats'][subcat])
+    except Exception:
+        pass
 
-        return category_name
+    return category_name
 
-    # Pantsu Utils
-    def query_builder(self, q, params):
-        available_params = ["category", "page", "limit", "userID", "fromID",
-                            "status", "maxage", "toDate", "fromDate",
-                            "dateType", "minSize", "maxSize", "sizeType",
-                            "sort", "order", "lang"]
-        query = "?q={}".format(q.replace(" ", "+"))
+# Pantsu Utils
+def query_builder(self, q, params):
+    available_params = ["category", "page", "limit", "userID", "fromID",
+                        "status", "maxage", "toDate", "fromDate",
+                        "dateType", "minSize", "maxSize", "sizeType",
+                        "sort", "order", "lang"]
+    query = "?q={}".format(q.replace(" ", "+"))
 
-        for param, value in params.items():
-            if param in available_params:
-                if (param != "category" and param != "status" and
-                        param != "lang"):
-                    query += "&{}={}".format(param, value)
-                elif param == "category":
-                    query += "&c={}_{}".format(value[0], value[1])
+    for param, value in params.items():
+        if param in available_params:
+            if (param != "category" and param != "status" and
+                    param != "lang"):
+                query += "&{}={}".format(param, value)
+            elif param == "category":
+                query += "&c={}_{}".format(value[0], value[1])
 
-                elif param == "status":
-                    query += "&s={}".format(value)
+            elif param == "status":
+                query += "&s={}".format(value)
 
-                elif param == "lang":
-                    for lang in value:
-                        query += "&lang={}".format(lang)
+            elif param == "lang":
+                for lang in value:
+                    query += "&lang={}".format(lang)
 
-        return query
+    return query
