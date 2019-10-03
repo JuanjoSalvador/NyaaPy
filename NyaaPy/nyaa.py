@@ -1,10 +1,7 @@
 import requests
 import urllib.parse
 from bs4 import BeautifulSoup
-from NyaaPy.utils import Utils
-
-utils = Utils()
-
+from NyaaPy.utils import utils
 
 class Nyaa:
 
