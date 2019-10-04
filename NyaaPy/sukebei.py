@@ -1,6 +1,6 @@
 import requests
 from bs4 import BeautifulSoup
-from NyaaPy.utils import utils
+from NyaaPy import utils
 
 class SukebeiNyaa:
     def search(self, keyword, **kwargs):

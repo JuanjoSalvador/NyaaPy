@@ -4,7 +4,7 @@
 
 import re
 
-def nyaa_categories(self, b):
+def nyaa_categories(b):
     c = b.replace('/?c=', '')
     cats = c.split('_')
 
@@ -69,7 +69,7 @@ def nyaa_categories(self, b):
 
     return category_name
 
-def parse_nyaa(self, table_rows, limit):
+def parse_nyaa(table_rows, limit):
     if limit == 0:
         limit = len(table_rows)
 
@@ -92,7 +92,7 @@ def parse_nyaa(self, table_rows, limit):
         try:
             torrent = {
                 'id': block[1].replace("/view/", ""),
-                'category': nyaa_categories(self, block[0]),
+                'category': nyaa_categories(block[0]),
                 'url': "http://nyaa.si{}".format(block[1]),
                 'name': block[2],
                 'download_url': "http://nyaa.si{}".format(block[4]),
@@ -110,7 +110,7 @@ def parse_nyaa(self, table_rows, limit):
 
     return torrents
 
-def parse_single(self, content):
+def parse_single(content):
     torrent = {}
     data = []
     torrent_files = []
@@ -143,45 +143,45 @@ def parse_single(self, content):
 
     return torrent
 
-def parse_sukebei(self, table_rows, limit):
-    if limit == 0:
-        limit = len(table_rows)
+# def parse_sukebei(table_rows, limit):
+#     if limit == 0:
+#         limit = len(table_rows)
 
-    torrents = []
+#     torrents = []
 
-    for row in table_rows[:limit]:
-        block = []
+#     for row in table_rows[:limit]:
+#         block = []
 
-        for td in row.find_all('td'):
-            for link in td.find_all('a'):
-                if link.get('href')[-9:] != '#comments':
-                    block.append(link.get('href'))
-                    block.append(link.text.rstrip())
+#         for td in row.find_all('td'):
+#             for link in td.find_all('a'):
+#                 if link.get('href')[-9:] != '#comments':
+#                     block.append(link.get('href'))
+#                     block.append(link.text.rstrip())
 
-            if td.text.rstrip():
-                block.append(td.text.rstrip())
+#             if td.text.rstrip():
+#                 block.append(td.text.rstrip())
 
-            try:
-                torrent = {
-                    'id': block[1].replace("/view/", ""),
-                    'category': sukebei_categories(self, block[0]),
-                    'url': "http://sukebei.nyaa.si{}".format(block[1]),
-                    'name': block[2],
-                    'download_url': "http://sukebei.nyaa.si{}".format(
-                        block[4]),
-                    'magnet': block[5],
-                    'size': block[6],
-                    'date': block[7],
-                    'seeders': block[8],
-                    'leechers': block[9],
-                    'completed_downloads': block[10],
-                }
+#             try:
+#                 torrent = {
+#                     'id': block[1].replace("/view/", ""),
+#                     'category': sukebei_categories(block[0]),
+#                     'url': "http://sukebei.nyaa.si{}".format(block[1]),
+#                     'name': block[2],
+#                     'download_url': "http://sukebei.nyaa.si{}".format(
+#                         block[4]),
+#                     'magnet': block[5],
+#                     'size': block[6],
+#                     'date': block[7],
+#                     'seeders': block[8],
+#                     'leechers': block[9],
+#                     'completed_downloads': block[10],
+#                 }
 
-            torrents.append(torrent)
+#             torrents.append(torrent)
 
-    return torrents
+#     return torrents
 
-def sukebei_categories(self, b):
+def sukebei_categories(b):
     c = b.replace('/?c=', '')
     cats = c.split('_')
 
@@ -217,7 +217,7 @@ def sukebei_categories(self, b):
     return category_name
 
 # Pantsu Utils
-def query_builder(self, q, params):
+def query_builder(q, params):
     available_params = ["category", "page", "limit", "userID", "fromID",
                         "status", "maxage", "toDate", "fromDate",
                         "dateType", "minSize", "maxSize", "sizeType",
