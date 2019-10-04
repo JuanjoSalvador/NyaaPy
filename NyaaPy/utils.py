@@ -89,6 +89,14 @@ def parse_nyaa(table_rows, limit):
             if td.text.rstrip():
                 block.append(td.text.rstrip())
 
+        if row.has_attr('class'):
+            if row['class'][0] == 'danger':
+                block.append("remake")
+            elif row['class'][0] == 'success':
+                block.append("trusted")
+            else:
+                block.append("default")
+
         try:
             torrent = {
                 'id': block[1].replace("/view/", ""),
@@ -102,6 +110,7 @@ def parse_nyaa(table_rows, limit):
                 'seeders': block[8],
                 'leechers': block[9],
                 'completed_downloads': block[10],
+                'type': block[11],
             }
 
             torrents.append(torrent)
@@ -143,43 +152,45 @@ def parse_single(content):
 
     return torrent
 
-# def parse_sukebei(table_rows, limit):
-#     if limit == 0:
-#         limit = len(table_rows)
+def parse_sukebei(table_rows, limit):
+    if limit == 0:
+        limit = len(table_rows)
 
-#     torrents = []
+    torrents = []
 
-#     for row in table_rows[:limit]:
-#         block = []
+    for row in table_rows[:limit]:
+        block = []
 
-#         for td in row.find_all('td'):
-#             for link in td.find_all('a'):
-#                 if link.get('href')[-9:] != '#comments':
-#                     block.append(link.get('href'))
-#                     block.append(link.text.rstrip())
+        for td in row.find_all('td'):
+            for link in td.find_all('a'):
+                if link.get('href')[-9:] != '#comments':
+                    block.append(link.get('href'))
+                    block.append(link.text.rstrip())
 
-#             if td.text.rstrip():
-#                 block.append(td.text.rstrip())
+            if td.text.rstrip():
+                block.append(td.text.rstrip())
 
-#             try:
-#                 torrent = {
-#                     'id': block[1].replace("/view/", ""),
-#                     'category': sukebei_categories(block[0]),
-#                     'url': "http://sukebei.nyaa.si{}".format(block[1]),
-#                     'name': block[2],
-#                     'download_url': "http://sukebei.nyaa.si{}".format(
-#                         block[4]),
-#                     'magnet': block[5],
-#                     'size': block[6],
-#                     'date': block[7],
-#                     'seeders': block[8],
-#                     'leechers': block[9],
-#                     'completed_downloads': block[10],
-#                 }
+            try:
+                torrent = {
+                    'id': block[1].replace("/view/", ""),
+                    'category': sukebei_categories(block[0]),
+                    'url': "http://sukebei.nyaa.si{}".format(block[1]),
+                    'name': block[2],
+                    'download_url': "http://sukebei.nyaa.si{}".format(
+                        block[4]),
+                    'magnet': block[5],
+                    'size': block[6],
+                    'date': block[7],
+                    'seeders': block[8],
+                    'leechers': block[9],
+                    'completed_downloads': block[10],
+                }
+            except IndexError as ie:
+                pass
 
-#             torrents.append(torrent)
+            torrents.append(torrent)
 
-#     return torrents
+    return torrents
 
 def sukebei_categories(b):
     c = b.replace('/?c=', '')
