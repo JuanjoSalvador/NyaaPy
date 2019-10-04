@@ -176,6 +176,8 @@ def parse_sukebei(self, table_rows, limit):
                     'leechers': block[9],
                     'completed_downloads': block[10],
                 }
+            except IndexError as ie:
+                pass
 
             torrents.append(torrent)
 
