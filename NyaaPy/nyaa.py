@@ -1,12 +1,19 @@
 import requests
 import urllib.parse
 from bs4 import BeautifulSoup
-from NyaaPy.utils import utils
+from NyaaPy import utils
 
 class Nyaa:
 
     def __init__(self):
         self.URI = "http://nyaa.si"
+
+    def last_uploads(self, number_of_results):
+        r = requests.get(self.URI)
+        soup = BeautifulSoup(r.text, 'html.parser')
+        rows = soup.select('table tr')
+
+        return utils.parse_nyaa(table_rows=rows, limit=number_of_results + 1)
 
     def search(self, keyword, **kwargs):
         user = kwargs.get('user', None)
@@ -45,10 +52,3 @@ class Nyaa:
         soup = BeautifulSoup(r.text, 'html.parser')
 
         return utils.parse_nyaa(soup.select('table tr'), limit=None)
-
-    def news(self, number_of_results):
-        r = requests.get(self.URI)
-        soup = BeautifulSoup(r.text, 'html.parser')
-        rows = soup.select('table tr')
-
-        return utils.parse_nyaa(rows, limit=number_of_results + 1)
