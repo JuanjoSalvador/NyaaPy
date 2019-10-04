@@ -8,6 +8,14 @@ class Pantsu:
 
     def __init__(self):
         self.BASE_URL = "https://nyaa.pantsu.cat/api"
+    
+    def last_uploads(self, number_of_results):
+       r = requests.get(self.URI)
+       soup = BeautifulSoup(r.text, 'html.parser')
+       rows = soup.select('table tr')
+
+       return utils.parse_nyaa(rows, limit=number_of_results + 1)
+
 
     # Torrents - GET
     def search(self, keyword, **kwargs):
