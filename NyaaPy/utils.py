@@ -4,7 +4,7 @@
 
 import re
 
-def nyaa_categories(self, b):
+def nyaa_categories(b):
     c = b.replace('/?c=', '')
     cats = c.split('_')
 
@@ -69,7 +69,7 @@ def nyaa_categories(self, b):
 
     return category_name
 
-def parse_nyaa(self, table_rows, limit):
+def parse_nyaa(table_rows, limit):
     if limit == 0:
         limit = len(table_rows)
 
@@ -89,10 +89,18 @@ def parse_nyaa(self, table_rows, limit):
             if td.text.rstrip():
                 block.append(td.text.rstrip())
 
+        if row.has_attr('class'):
+            if row['class'][0] == 'danger':
+                block.append("remake")
+            elif row['class'][0] == 'success':
+                block.append("trusted")
+            else:
+                block.append("default")
+
         try:
             torrent = {
                 'id': block[1].replace("/view/", ""),
-                'category': nyaa_categories(self, block[0]),
+                'category': nyaa_categories(block[0]),
                 'url': "http://nyaa.si{}".format(block[1]),
                 'name': block[2],
                 'download_url': "http://nyaa.si{}".format(block[4]),
@@ -102,6 +110,7 @@ def parse_nyaa(self, table_rows, limit):
                 'seeders': block[8],
                 'leechers': block[9],
                 'completed_downloads': block[10],
+                'type': block[11],
             }
 
             torrents.append(torrent)
@@ -110,7 +119,7 @@ def parse_nyaa(self, table_rows, limit):
 
     return torrents
 
-def parse_single(self, content):
+def parse_single(content):
     torrent = {}
     data = []
     torrent_files = []
@@ -143,7 +152,7 @@ def parse_single(self, content):
 
     return torrent
 
-def parse_sukebei(self, table_rows, limit):
+def parse_sukebei(table_rows, limit):
     if limit == 0:
         limit = len(table_rows)
 
@@ -164,7 +173,7 @@ def parse_sukebei(self, table_rows, limit):
             try:
                 torrent = {
                     'id': block[1].replace("/view/", ""),
-                    'category': sukebei_categories(self, block[0]),
+                    'category': sukebei_categories(block[0]),
                     'url': "http://sukebei.nyaa.si{}".format(block[1]),
                     'name': block[2],
                     'download_url': "http://sukebei.nyaa.si{}".format(
@@ -183,7 +192,7 @@ def parse_sukebei(self, table_rows, limit):
 
     return torrents
 
-def sukebei_categories(self, b):
+def sukebei_categories(b):
     c = b.replace('/?c=', '')
     cats = c.split('_')
 
@@ -219,7 +228,7 @@ def sukebei_categories(self, b):
     return category_name
 
 # Pantsu Utils
-def query_builder(self, q, params):
+def query_builder(q, params):
     available_params = ["category", "page", "limit", "userID", "fromID",
                         "status", "maxage", "toDate", "fromDate",
                         "dateType", "minSize", "maxSize", "sizeType",
