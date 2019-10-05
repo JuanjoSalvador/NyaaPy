@@ -4,8 +4,27 @@
 
 1. Star the repo, it will help me a lot.
 2. Make a fork for you.
-3. Use the `dev` branch, never master.
+3. Clone the repo into your local machine.
+4. Create a new branch for your changes.
+5. Start hacking :-)
 
+## Not familiarized with the Python workflow?
+
+1. Be sure that you have Python 3 and virtualenv installed (if not, install them)
+2. Create a new virtualenv
+
+```
+  python -m virtualenv env -p python3
+```
+    
+3. And activate it!
+4. Now it's time to install the dependencies.
+
+```
+  pip install -r requirements.txt
+```
+
+5. And now you're ready to hack.
 
 ## Hacking
 
