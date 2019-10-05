@@ -1,5 +1,5 @@
 import requests
-from NyaaPy.utils import utils
+from NyaaPy import utils
 
 class Pantsu:
 
