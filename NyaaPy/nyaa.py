@@ -1,6 +1,6 @@
 import requests
 import urllib.parse
-from NyaaPy import utils_lxml
+from NyaaPy import utils
 
 
 class Nyaa:
@@ -14,12 +14,11 @@ class Nyaa:
         # If anything up with nyaa servers let the user know.
         r.raise_for_status()
 
-        return utils_lxml.parse_nyaa(
+        return utils.parse_nyaa(
             request_text=r.text,
             limit=number_of_results + 1
         )
 
-"""
     def search(self, keyword, **kwargs):
         user = kwargs.get('user', None)
         category = kwargs.get('category', 0)
@@ -40,21 +39,20 @@ class Nyaa:
             r = requests.get("{}/{}?f={}&c={}_{}&q={}".format(
                 self.URI, user_uri, filters, category, subcategory, keyword))
 
-        soup = BeautifulSoup(r.text, 'html.parser')
-        rows = soup.select('table tr')
+        r.raise_for_status()
 
-        return utils.parse_nyaa(rows, limit=None)
+        return utils.parse_nyaa(request_text=r.text, limit=None)
 
     def get(self, id):
         r = requests.get("{}/view/{}".format(self.URI, id))
-        soup = BeautifulSoup(r.text, 'html.parser')
-        content = soup.findAll("div", {"class": "panel", "id": None})
-
-        return utils.parse_single(content)
+        r.raise_for_status()
+        # ! Description not working TODO
+        # with open("test.html", "w") as f:
+        #    f.write(r.text)
+        return utils.parse_single(request_text=r.text)
 
     def get_user(self, username):
         r = requests.get("{}/user/{}".format(self.URI, username))
         soup = BeautifulSoup(r.text, 'html.parser')
 
         return utils.parse_nyaa(soup.select('table tr'), limit=None)
-"""
