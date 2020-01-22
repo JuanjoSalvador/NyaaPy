@@ -46,13 +46,11 @@ class Nyaa:
     def get(self, id):
         r = requests.get("{}/view/{}".format(self.URI, id))
         r.raise_for_status()
-        # ! Description not working TODO
-        # with open("test.html", "w") as f:
-        #    f.write(r.text)
+
         return utils.parse_single(request_text=r.text)
 
     def get_user(self, username):
         r = requests.get("{}/user/{}".format(self.URI, username))
-        soup = BeautifulSoup(r.text, 'html.parser')
+        r.raise_for_status()
 
-        return utils.parse_nyaa(soup.select('table tr'), limit=None)
+        return utils.parse_nyaa(request_text=r.text, limit=None)

@@ -4,7 +4,6 @@
 
 import re
 from lxml import etree
-from pprint import pprint
 
 
 def nyaa_categories(b):
