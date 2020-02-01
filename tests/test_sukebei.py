@@ -1,13 +1,6 @@
 from NyaaPy import SukebeiNyaa
-<<<<<<< HEAD
 from datetime import datetime
 import json
-=======
-from pprint import pprint
-from datetime import datetime
-import json
-import sys
->>>>>>> 5c93e516ba364d448335ebdc6989f8e1724c88c7
 import os
 
 # Creating a folder for test_files
