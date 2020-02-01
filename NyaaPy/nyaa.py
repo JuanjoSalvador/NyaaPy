@@ -5,11 +5,8 @@ from NyaaPy import utils
 class Nyaa:
 
     def __init__(self):
-<<<<<<< HEAD
         self.SITE = utils.TorrentSite.NYAASI
-=======
         self.URI = "https://nyaa.si"
->>>>>>> 5c93e516ba364d448335ebdc6989f8e1724c88c7
 
     def last_uploads(self, number_of_results):
         r = requests.get(self.SITE.value)
