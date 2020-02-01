@@ -3,7 +3,20 @@
 '''
 
 import re
+from enum import Enum
 from lxml import etree
+
+
+class TorrentSite(Enum):
+    """
+    Contains torrent sites
+    """
+    NYAASI = "https://nyaa.si"
+    SUKEBEINYAASI = "https://sukebei.nyaa.si"
+
+    # * nyaa.pantsu.cat redirects to nyaa.net
+    NYAANET = "https://nyaa.net"
+    SUKEBEINYAANET = "https://sukebei.nyaa.net"
 
 
 def nyaa_categories(b):
@@ -72,9 +85,12 @@ def nyaa_categories(b):
     return category_name
 
 
-def parse_nyaa(request_text, limit):
+def parse_nyaa(request_text, limit, site):
     parser = etree.HTMLParser()
     tree = etree.fromstring(request_text, parser)
+
+    # Put proper domain here.
+    uri = site.value
 
     torrents = []
 
@@ -94,25 +110,36 @@ def parse_nyaa(request_text, limit):
                     if link.text and link.text.strip():
                         block.append(link.text.strip())
 
-            if td.text and td.text.strip():
+            if td.text is not None and td.text.strip():
                 block.append(td.text.strip())
 
         # Add type of torrent based on tr class.
-        if 'danger' in tr.attrib.get("class"):
-            block.append("remake")
-        elif 'success' in tr.attrib.get("class"):
-            block.append("trusted")
+        if tr.attrib.get("class") is not None:
+            if 'danger' in tr.attrib.get("class"):
+                block.append("remake")
+            elif 'success' in tr.attrib.get("class"):
+                block.append("trusted")
+            else:
+                block.append("default")
         else:
             block.append("default")
+
+        # Decide category.
+        if site in [TorrentSite.NYAASI, TorrentSite.NYAANET]:
+            category = nyaa_categories(block[0])
+        elif site in [TorrentSite.SUKEBEINYAASI, TorrentSite.SUKEBEINYAANET]:
+            category = sukebei_categories(block[0])
+        else:
+            raise ArgumentException("Unknown TorrentSite received!")
 
         # Create torrent object
         try:
             torrent = {
                 'id': block[1],
-                'category': nyaa_categories(block[0]),
-                'url': "https://nyaa.si/view/{}".format(block[1]),
+                'category': category,
+                'url': "{}/view/{}".format(uri, block[1]),
                 'name': block[2],
-                'download_url': "https://nyaa.si/download/{}".format(block[3]),
+                'download_url': "{}/download/{}".format(uri, block[3]),
                 'magnet': block[4],
                 'size': block[5],
                 'date': block[6],
@@ -127,9 +154,12 @@ def parse_nyaa(request_text, limit):
     return torrents
 
 
-def parse_single(request_text):
+def parse_single(request_text, site):
     parser = etree.HTMLParser()
     tree = etree.fromstring(request_text, parser)
+
+    # Put proper domain here.
+    uri = site.value
 
     torrent = {}
     data = []
@@ -152,7 +182,7 @@ def parse_single(request_text):
         tree.xpath("//h3[@class='panel-title']/text()")[0].strip()
     torrent['category'] = data[0]
     torrent['uploader'] = data[4]
-    torrent['uploader_profile'] = "http://nyaa.si/user/{}".format(data[4])
+    torrent['uploader_profile'] = "{}/user/{}".format(uri, data[4])
     torrent['website'] = data[6]
     torrent['size'] = data[8]
     torrent['date'] = data[3]
@@ -169,49 +199,8 @@ def parse_single(request_text):
     return torrent
 
 
-def parse_sukebei(table_rows, limit):
-    if limit == 0:
-        limit = len(table_rows)
-
-    torrents = []
-
-    for row in table_rows[:limit]:
-        block = []
-
-        for td in row.find_all('td'):
-            for link in td.find_all('a'):
-                if link.get('href')[-9:] != '#comments':
-                    block.append(link.get('href'))
-                    block.append(link.text.rstrip())
-
-            if td.text.rstrip():
-                block.append(td.text.rstrip())
-
-            try:
-                torrent = {
-                    'id': block[1].replace("/view/", ""),
-                    'category': sukebei_categories(block[0]),
-                    'url': "http://sukebei.nyaa.si{}".format(block[1]),
-                    'name': block[2],
-                    'download_url': "http://sukebei.nyaa.si{}".format(
-                        block[4]),
-                    'magnet': block[5],
-                    'size': block[6],
-                    'date': block[7],
-                    'seeders': block[8],
-                    'leechers': block[9],
-                    'completed_downloads': block[10],
-                }
-            except IndexError as ie:
-                pass
-
-            torrents.append(torrent)
-
-    return torrents
-
-
 def sukebei_categories(b):
-    c = b.replace('/?c=', '')
+    c = b.replace('?c=', '')
     cats = c.split('_')
 
     cat = cats[0]
