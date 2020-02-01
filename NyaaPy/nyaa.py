@@ -1,12 +1,11 @@
 import requests
-import urllib.parse
 from NyaaPy import utils
 
 
 class Nyaa:
 
     def __init__(self):
-        self.URI = "http://nyaa.si"
+        self.URI = "https://nyaa.si"
 
     def last_uploads(self, number_of_results):
         r = requests.get(self.URI)

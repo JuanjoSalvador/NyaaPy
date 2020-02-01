@@ -1,8 +1,12 @@
 import requests
-from bs4 import BeautifulSoup
 from NyaaPy import utils
 
+
 class SukebeiNyaa:
+
+    def __init__(self):
+        self.URI = "https://sukebei.nyaa.si"
+
     def search(self, keyword, **kwargs):
         category = kwargs.get('category', 0)
         subcategory = kwargs.get('subcategory', 0)
@@ -11,37 +15,37 @@ class SukebeiNyaa:
 
         if page > 0:
             r = requests.get("{}/?f={}&c={}_{}&q={}&p={}".format(
-                "http://sukebei.nyaa.si", filters, category, subcategory,
+                self.URI, filters, category, subcategory,
                 keyword, page))
         else:
             r = requests.get("{}/?f={}&c={}_{}&q={}".format(
-                "http://sukebei.nyaa.si", filters, category, subcategory,
+                self.URI, filters, category, subcategory,
                 keyword))
 
-        soup = BeautifulSoup(r.text, 'html.parser')
-        rows = soup.select('table tr')
-
-        return utils.parse_nyaa(rows, limit=None)
+        r.raise_for_status()
+        return utils.parse_nyaa(r.text, limit=None, sukebei=True)
 
     def get(self, id):
-        r = requests.get("http://sukebei.nyaa.si/view/{}".format(id))
-        soup = BeautifulSoup(r.text, 'html.parser')
-        content = soup.findAll("div", {"class": "panel", "id": None})
+        r = requests.get("{}/view/{}".format(self.URI, id))
+        r.raise_for_status()
 
-        return utils.parse_single(content)
+        return utils.parse_single(r.text, sukebei=True)
 
     def get_user(self, username):
-        r = requests.get("http://sukebei.nyaa.si/user/{}".format(username))
-        soup = BeautifulSoup(r.text, 'html.parser')
+        r = requests.get("{}/user/{}".format(self.URI, username))
+        r.raise_for_status()
 
-        return utils.parse_nyaa(soup.select('table tr'), limit=None)
+        return utils.parse_nyaa(r.text, limit=None, sukebei=True)
 
-    def news(self, number_of_results):
-        r = requests.get("http://sukebei.nyaa.si/")
-        soup = BeautifulSoup(r.text, 'html.parser')
-        rows = soup.select('table tr')
+    def last_uploads(self, number_of_results):
+        r = requests.get(self.URI)
+        r.raise_for_status()
 
-        return utils.parse_sukebei(rows, limit=number_of_results + 1)
+        return utils.parse_nyaa(
+            r.text,
+            limit=number_of_results + 1,
+            sukebei=True
+        )
 
 
 class SukebeiPantsu:

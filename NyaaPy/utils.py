@@ -72,9 +72,14 @@ def nyaa_categories(b):
     return category_name
 
 
-def parse_nyaa(request_text, limit):
+def parse_nyaa(request_text, limit, sukebei=False):
     parser = etree.HTMLParser()
     tree = etree.fromstring(request_text, parser)
+
+    if sukebei is False:
+        uri = "https://nyaa.si"
+    else:
+        uri = "https://sukebei.nyaa.si"
 
     torrents = []
 
@@ -109,10 +114,10 @@ def parse_nyaa(request_text, limit):
         try:
             torrent = {
                 'id': block[1],
-                'category': nyaa_categories(block[0]),
-                'url': "https://nyaa.si/view/{}".format(block[1]),
+                'category': nyaa_categories(block[0]) if sukebei is False else sukebei_categories(block[0]),
+                'url': "{}/view/{}".format(uri, block[1]),
                 'name': block[2],
-                'download_url': "https://nyaa.si/download/{}".format(block[3]),
+                'download_url': "{}/download/{}".format(uri, block[3]),
                 'magnet': block[4],
                 'size': block[5],
                 'date': block[6],
@@ -127,9 +132,14 @@ def parse_nyaa(request_text, limit):
     return torrents
 
 
-def parse_single(request_text):
+def parse_single(request_text, sukebei=False):
     parser = etree.HTMLParser()
     tree = etree.fromstring(request_text, parser)
+
+    if sukebei is False:
+        uri = "https://nyaa.si"
+    else:
+        uri = "https://sukebei.nyaa.si"
 
     torrent = {}
     data = []
@@ -152,7 +162,7 @@ def parse_single(request_text):
         tree.xpath("//h3[@class='panel-title']/text()")[0].strip()
     torrent['category'] = data[0]
     torrent['uploader'] = data[4]
-    torrent['uploader_profile'] = "http://nyaa.si/user/{}".format(data[4])
+    torrent['uploader_profile'] = "{}/user/{}".format(uri, data[4])
     torrent['website'] = data[6]
     torrent['size'] = data[8]
     torrent['date'] = data[3]
@@ -169,49 +179,8 @@ def parse_single(request_text):
     return torrent
 
 
-def parse_sukebei(table_rows, limit):
-    if limit == 0:
-        limit = len(table_rows)
-
-    torrents = []
-
-    for row in table_rows[:limit]:
-        block = []
-
-        for td in row.find_all('td'):
-            for link in td.find_all('a'):
-                if link.get('href')[-9:] != '#comments':
-                    block.append(link.get('href'))
-                    block.append(link.text.rstrip())
-
-            if td.text.rstrip():
-                block.append(td.text.rstrip())
-
-            try:
-                torrent = {
-                    'id': block[1].replace("/view/", ""),
-                    'category': sukebei_categories(block[0]),
-                    'url': "http://sukebei.nyaa.si{}".format(block[1]),
-                    'name': block[2],
-                    'download_url': "http://sukebei.nyaa.si{}".format(
-                        block[4]),
-                    'magnet': block[5],
-                    'size': block[6],
-                    'date': block[7],
-                    'seeders': block[8],
-                    'leechers': block[9],
-                    'completed_downloads': block[10],
-                }
-            except IndexError as ie:
-                pass
-
-            torrents.append(torrent)
-
-    return torrents
-
-
 def sukebei_categories(b):
-    c = b.replace('/?c=', '')
+    c = b.replace('?c=', '')
     cats = c.split('_')
 
     cat = cats[0]
