@@ -1,21 +1,28 @@
 import requests
-import urllib.parse
-from bs4 import BeautifulSoup
 from NyaaPy import utils
+
 
 class Nyaa:
 
     def __init__(self):
-        self.URI = "http://nyaa.si"
+        self.SITE = utils.TorrentSite.NYAASI
+        self.URI = "https://nyaa.si"
 
     def last_uploads(self, number_of_results):
-        r = requests.get(self.URI)
-        soup = BeautifulSoup(r.text, 'html.parser')
-        rows = soup.select('table tr')
+        r = requests.get(self.SITE.value)
 
-        return utils.parse_nyaa(table_rows=rows, limit=number_of_results + 1)
+        # If anything up with nyaa servers let the user know.
+        r.raise_for_status()
+
+        return utils.parse_nyaa(
+            request_text=r.text,
+            limit=number_of_results + 1,
+            site=self.SITE
+        )
 
     def search(self, keyword, **kwargs):
+        url = self.SITE.value
+
         user = kwargs.get('user', None)
         category = kwargs.get('category', 0)
         subcategory = kwargs.get('subcategory', 0)
@@ -29,26 +36,32 @@ class Nyaa:
 
         if page > 0:
             r = requests.get("{}/{}?f={}&c={}_{}&q={}&p={}".format(
-                self.URI, user_uri, filters, category, subcategory, keyword,
+                url, user_uri, filters, category, subcategory, keyword,
                 page))
         else:
             r = requests.get("{}/{}?f={}&c={}_{}&q={}".format(
-                self.URI, user_uri, filters, category, subcategory, keyword))
+                url, user_uri, filters, category, subcategory, keyword))
 
-        soup = BeautifulSoup(r.text, 'html.parser')
-        rows = soup.select('table tr')
+        r.raise_for_status()
 
-        return utils.parse_nyaa(rows, limit=None)
+        return utils.parse_nyaa(
+            request_text=r.text,
+            limit=None,
+            site=self.SITE
+        )
 
     def get(self, id):
-        r = requests.get("{}/view/{}".format(self.URI, id))
-        soup = BeautifulSoup(r.text, 'html.parser')
-        content = soup.findAll("div", {"class": "panel", "id": None})
+        r = requests.get("{}/view/{}".format(self.SITE.value, id))
+        r.raise_for_status()
 
-        return utils.parse_single(content)
+        return utils.parse_single(request_text=r.text, site=self.SITE)
 
     def get_user(self, username):
-        r = requests.get("{}/user/{}".format(self.URI, username))
-        soup = BeautifulSoup(r.text, 'html.parser')
+        r = requests.get("{}/user/{}".format(self.SITE.value, username))
+        r.raise_for_status()
 
-        return utils.parse_nyaa(soup.select('table tr'), limit=None)
+        return utils.parse_nyaa(
+            request_text=r.text,
+            limit=None,
+            site=self.SITE
+        )
