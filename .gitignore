@@ -4,3 +4,6 @@ nyaapy.egg-info
 .vscode
 env/
 *.pyc
+test_files
+venv
+.idea
