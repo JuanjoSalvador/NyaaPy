@@ -1,8 +1,3 @@
-'''
-    Module utils
-'''
-
-import re
 from enum import Enum
 from lxml import etree
 
@@ -24,12 +19,12 @@ def nyaa_categories(b):
     cats = c.split('_')
 
     cat = cats[0]
-    subcat = cats[1]
+    sub_cat = cats[1]
 
     categories = {
         "1": {
             "name": "Anime",
-            "subcats": {
+            "sub_cats": {
                 "1": "Anime Music Video",
                 "2": "English-translated",
                 "3": "Non-English-translated",
@@ -38,14 +33,14 @@ def nyaa_categories(b):
         },
         "2": {
             "name": "Audio",
-            "subcats": {
+            "sub_cats": {
                 "1": "Lossless",
                 "2": "Lossy"
             }
         },
         "3": {
             "name": "Literature",
-            "subcats": {
+            "sub_cats": {
                 "1": "English-translated",
                 "2": "Non-English-translated",
                 "3": "Raw"
@@ -53,7 +48,7 @@ def nyaa_categories(b):
         },
         "4": {
             "name": "Live Action",
-            "subcats": {
+            "sub_cats": {
                 "1": "English-translated",
                 "2": "Idol/Promotional Video",
                 "3": "Non-English-translated",
@@ -62,14 +57,14 @@ def nyaa_categories(b):
         },
         "5": {
             "name": "Pictures",
-            "subcats": {
+            "sub_cats": {
                 "1": "Graphics",
                 "2": "Photos"
             }
         },
         "6": {
             "name": "Software",
-            "subcats": {
+            "sub_cats": {
                 "1": "Applications",
                 "2": "Games"
             }
@@ -77,10 +72,10 @@ def nyaa_categories(b):
     }
 
     try:
-        category_name = "{} - {}".format(
-            categories[cat]['name'], categories[cat]['subcats'][subcat])
-    except Exception:
-        pass
+        category_name = f"{categories[cat]['name']} - {categories[cat]['sub_cats'][sub_cat]}"
+    except KeyError:
+        print("Unable to get Nyaa category name")
+        return
 
     return category_name
 
@@ -130,7 +125,7 @@ def parse_nyaa(request_text, limit, site):
         elif site in [TorrentSite.SUKEBEINYAASI, TorrentSite.SUKEBEINYAANET]:
             category = sukebei_categories(block[0])
         else:
-            raise ArgumentException("Unknown TorrentSite received!")
+            raise ValueError("Unknown TorrentSite received!")
 
         # Create torrent object
         try:
@@ -227,10 +222,10 @@ def sukebei_categories(b):
     }
 
     try:
-        category_name = "{} - {}".format(
-            categories[cat]['name'], categories[cat]['subcats'][subcat])
-    except Exception:
-        pass
+        category_name = f"{categories[cat]['name']} - {categories[cat]['subcats'][subcat]}"
+    except KeyError:
+        print("Unable to get Sukebei category name")
+        return
 
     return category_name
 

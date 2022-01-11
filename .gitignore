@@ -5,3 +5,5 @@ nyaapy.egg-info
 env/
 *.pyc
 test_files
+venv
+.idea

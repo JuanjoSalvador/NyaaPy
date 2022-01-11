@@ -1,4 +1,4 @@
-from NyaaPy import SukebeiNyaa
+from NyaaPy.sukebei import SukebeiNyaa
 from datetime import datetime
 import json
 import os
