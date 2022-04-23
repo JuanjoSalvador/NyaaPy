@@ -1,4 +1,7 @@
+import urllib
 from enum import Enum
+from urllib.parse import urlencode
+
 from lxml import etree
 
 
@@ -78,6 +81,45 @@ def nyaa_categories(b):
         return
 
     return category_name
+
+
+def parse_nyaa_rss(request_text, limit, site):
+    root = etree.fromstring(request_text)
+    torrents = []
+
+    for item in root.xpath("channel/item")[:limit]:
+        # Decide category.
+        if site in [TorrentSite.NYAASI, TorrentSite.NYAANET]:
+            category = item.findtext("nyaa:categoryId", namespaces=item.nsmap)
+        elif site in [TorrentSite.SUKEBEINYAASI, TorrentSite.SUKEBEINYAANET]:
+            category = item.findtext("nyaa:categoryId", namespaces=item.nsmap)
+        else:
+            raise ValueError("Unknown TorrentSite received!")
+
+        try:
+            is_remake = item.findtext("nyaa:remake", namespaces=item.nsmap) == "Yes"
+            is_trusted = item.findtext("nyaa:trusted", namespaces=item.nsmap) == "Yes"
+            item_type = "remake" if is_remake else "trusted" if is_trusted else "default"
+
+            torrent = {
+                'id': item.findtext("guid").split("/")[-1],
+                'category': category,
+                'url': item.findtext("guid"),
+                'name': item.findtext("title"),
+                'download_url': item.findtext("link"),
+                'magnet': magnet_builder(item.findtext("nyaa:infoHash", namespaces=item.nsmap), item.findtext("title")),
+                'size': item.findtext("nyaa:size", namespaces=item.nsmap),
+                'date': item.findtext("pubDate"),
+                'seeders': item.findtext("nyaa:seeders", namespaces=item.nsmap),
+                'leechers': item.findtext("nyaa:leechers", namespaces=item.nsmap),
+                'completed_downloads': None,
+                'type': item_type
+            }
+            torrents.append(torrent)
+        except IndexError:
+            pass
+
+    return torrents
 
 
 def parse_nyaa(request_text, limit, site):
@@ -228,6 +270,22 @@ def sukebei_categories(b):
         return
 
     return category_name
+
+
+def magnet_builder(info_hash, title):
+    known_trackers = [
+        "http://nyaa.tracker.wf:7777/announce",
+        "udp://open.stealth.si:80/announce",
+        "udp://tracker.opentrackr.org:1337/announce",
+        "udp://exodus.desync.com:6969/announce",
+        "udp://tracker.torrent.eu.org:451/announce"
+    ]
+
+    magnet_link = f"magnet:?xt=urn:btih:{info_hash}&" + urlencode({"dn": title}, quote_via=urllib.parse.quote)
+    for tracker in known_trackers:
+        magnet_link += f"&{urlencode({'tr': tracker})}"
+
+    return magnet_link
 
 
 # Pantsu Utils
