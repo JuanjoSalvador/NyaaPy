@@ -84,6 +84,9 @@ def nyaa_categories(b):
 
 
 def parse_nyaa_rss(request_text, limit, site):
+    """
+    Extracts torrent information from a given rss response.
+    """
     root = etree.fromstring(request_text)
     torrents = []
 
@@ -273,6 +276,9 @@ def sukebei_categories(b):
 
 
 def magnet_builder(info_hash, title):
+    """
+    Generates a magnet link using the info_hash and title of a given file.
+    """
     known_trackers = [
         "http://nyaa.tracker.wf:7777/announce",
         "udp://open.stealth.si:80/announce",

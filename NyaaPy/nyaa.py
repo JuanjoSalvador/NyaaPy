@@ -37,22 +37,26 @@ class Nyaa:
             user_uri = ""
 
         if page > 0:
-            uri = "{}/{}?f={}&c={}_{}&q={}&p={}".format(url, user_uri, filters, category, subcategory, keyword, page)
+            uri = f"{url}/{user_uri}?f={filters}&c={category}_{subcategory}&q={keyword}&p={page}"
         else:
-            uri = "{}/{}?f={}&c={}_{}&q={}".format(url, user_uri, filters, category, subcategory, keyword)
+            uri = f"{url}/{user_uri}?f={filters}&c={category}_{subcategory}&q={keyword}"
 
         if not user:
             uri += "&page=rss"
 
-        r = requests.get(uri)
+        http_response = requests.get(uri)
 
-        r.raise_for_status()
+        http_response.raise_for_status()
 
         if user:
-            json_data = utils.parse_nyaa(request_text=r.text, limit=None, site=self.SITE)
+            json_data = utils.parse_nyaa(
+                request_text=http_response.text,
+                limit=None,
+                site=self.SITE
+            )
         else:
             json_data = utils.parse_nyaa_rss(
-                request_text=r.text,
+                request_text=http_response.text,
                 limit=None,
                 site=self.SITE
             )
