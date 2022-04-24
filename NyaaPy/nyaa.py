@@ -37,20 +37,29 @@ class Nyaa:
             user_uri = ""
 
         if page > 0:
-            r = requests.get("{}/{}?f={}&c={}_{}&q={}&p={}".format(
-                url, user_uri, filters, category, subcategory, keyword,
-                page))
+            uri = f"{url}/{user_uri}?f={filters}&c={category}_{subcategory}&q={keyword}&p={page}"
         else:
-            r = requests.get("{}/{}?f={}&c={}_{}&q={}".format(
-                url, user_uri, filters, category, subcategory, keyword))
+            uri = f"{url}/{user_uri}?f={filters}&c={category}_{subcategory}&q={keyword}"
 
-        r.raise_for_status()
+        if not user:
+            uri += "&page=rss"
 
-        json_data = utils.parse_nyaa(
-            request_text=r.text,
-            limit=None,
-            site=self.SITE
-        )
+        http_response = requests.get(uri)
+
+        http_response.raise_for_status()
+
+        if user:
+            json_data = utils.parse_nyaa(
+                request_text=http_response.text,
+                limit=None,
+                site=self.SITE
+            )
+        else:
+            json_data = utils.parse_nyaa_rss(
+                request_text=http_response.text,
+                limit=None,
+                site=self.SITE
+            )
 
         return torrent.json_to_class(json_data)
 
