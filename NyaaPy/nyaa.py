@@ -22,7 +22,7 @@ class Nyaa:
         )
         return torrent.json_to_class(json_data)
 
-    def search(self, keyword, **kwargs): # somth
+    def search(self, keyword, **kwargs):
         url = self.URL
 
         user = kwargs.get('user', None)
