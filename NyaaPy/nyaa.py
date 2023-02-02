@@ -30,6 +30,8 @@ class Nyaa:
         subcategory = kwargs.get('subcategory', 0)
         filters = kwargs.get('filters', 0)
         page = kwargs.get('page', 0)
+        sorting = kwargs.get('sort', 'id') # Sorting by id = sorting by date, this is the default.
+        order = kwargs.get('order', 'desc')
 
         if user:
             user_uri = f"user/{user}"
@@ -37,20 +39,32 @@ class Nyaa:
             user_uri = ""
 
         if page > 0:
-            r = requests.get("{}/{}?f={}&c={}_{}&q={}&p={}".format(
+            r = requests.get("{}/{}?f={}&c={}_{}&q={}&p={}&s={}&o={}".format(
                 url, user_uri, filters, category, subcategory, keyword,
-                page))
+                page, sorting, order))
         else:
-            r = requests.get("{}/{}?f={}&c={}_{}&q={}".format(
-                url, user_uri, filters, category, subcategory, keyword))
+            r = requests.get("{}/{}?f={}&c={}_{}&q={}&s={}&o={}".format(
+                url, user_uri, filters, category, subcategory, keyword, sorting, order))
 
-        r.raise_for_status()
+        if not user:
+            uri += "&page=rss"
 
-        json_data = utils.parse_nyaa(
-            request_text=r.text,
-            limit=None,
-            site=self.SITE
-        )
+        http_response = requests.get(uri)
+
+        http_response.raise_for_status()
+
+        if user:
+            json_data = utils.parse_nyaa(
+                request_text=http_response.text,
+                limit=None,
+                site=self.SITE
+            )
+        else:
+            json_data = utils.parse_nyaa_rss(
+                request_text=http_response.text,
+                limit=None,
+                site=self.SITE
+            )
 
         return torrent.json_to_class(json_data)
 
