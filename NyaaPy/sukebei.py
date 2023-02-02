@@ -1,11 +1,12 @@
 import requests
-from NyaaPy import utils
 
+from sites import TorrentSite
+from utils import parse_nyaa, parse_single
 
 class SukebeiNyaa:
 
     def __init__(self):
-        self.SITE = utils.TorrentSite.SUKEBEINYAASI
+        self.SITE = TorrentSite.SUKEBEINYAASI
 
     def search(self, keyword, **kwargs):
         uri = self.SITE.value
@@ -15,34 +16,30 @@ class SukebeiNyaa:
         page = kwargs.get('page', 0)
 
         if page > 0:
-            r = requests.get("{}/?f={}&c={}_{}&q={}&p={}".format(
-                uri, filters, category, subcategory,
-                keyword, page))
+            r = requests.get(f"{uri}/?f={filters}&c={category}_{subcategory}&q={keyword}&p={page}")
         else:
-            r = requests.get("{}/?f={}&c={}_{}&q={}".format(
-                uri, filters, category, subcategory,
-                keyword))
+            r = requests.get(f"{uri}/?f={filters}&c={category}_{subcategory}&q={keyword}")
 
         r.raise_for_status()
-        return utils.parse_nyaa(r.text, limit=None, site=self.SITE)
+        return parse_nyaa(r.text, limit=None, site=self.SITE)
 
     def get(self, id):
-        r = requests.get("{}/view/{}".format(self.SITE.value, id))
+        r = requests.get(f"{self.SITE.value}/view/{id}")
         r.raise_for_status()
 
-        return utils.parse_single(r.text, self.SITE)
+        return parse_single(r.text, self.SITE)
 
     def get_user(self, username):
-        r = requests.get("{}/user/{}".format(self.SITE.value, username))
+        r = requests.get(f"{self.SITE.value}/user/{username}")
         r.raise_for_status()
 
-        return utils.parse_nyaa(r.text, limit=None, site=self.SITE)
+        return parse_nyaa(r.text, limit=None, site=self.SITE)
 
     def last_uploads(self, number_of_results):
         r = requests.get(self.SITE.value)
         r.raise_for_status()
 
-        return utils.parse_nyaa(
+        return parse_nyaa(
             r.text,
             limit=number_of_results + 1,
             site=self.SITE

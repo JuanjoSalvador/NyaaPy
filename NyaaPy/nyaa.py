@@ -1,12 +1,12 @@
 import requests
-from NyaaPy import utils
-from NyaaPy import torrent
-
+from utils import parse_nyaa, parse_nyaa_rss, parse_single
+from torrent import json_to_class
+from sites import TorrentSite
 
 class Nyaa:
 
     def __init__(self):
-        self.SITE = utils.TorrentSite.NYAASI
+        self.SITE = TorrentSite.NYAASI
         self.URL = "https://nyaa.si"
 
     def last_uploads(self, number_of_results):
@@ -15,12 +15,12 @@ class Nyaa:
         # If anything up with nyaa servers let the user know.
         r.raise_for_status()
 
-        json_data = utils.parse_nyaa(
+        json_data = parse_nyaa(
             request_text=r.text,
             limit=number_of_results + 1,
             site=self.SITE
         )
-        return torrent.json_to_class(json_data)
+        return json_to_class(json_data)
 
     def search(self, keyword, **kwargs):
         url = self.URL
@@ -39,12 +39,13 @@ class Nyaa:
             user_uri = ""
 
         if page > 0:
-            r = requests.get("{}/{}?f={}&c={}_{}&q={}&p={}&s={}&o={}".format(
-                url, user_uri, filters, category, subcategory, keyword,
-                page, sorting, order))
+            r = requests.get(
+                f"{url}/{user_uri}?f={filters}&c={category}_{subcategory}&q={keyword}&p={page}&s={sorting}&o={order}"
+            )
         else:
-            r = requests.get("{}/{}?f={}&c={}_{}&q={}&s={}&o={}".format(
-                url, user_uri, filters, category, subcategory, keyword, sorting, order))
+            r = requests.get(
+                f"{url}/{user_uri}?f={filters}&c={category}_{subcategory}&q={keyword}&s={sorting}&o={order}"
+            )
 
         if not user:
             uri += "&page=rss"
@@ -54,35 +55,35 @@ class Nyaa:
         http_response.raise_for_status()
 
         if user:
-            json_data = utils.parse_nyaa(
+            json_data = parse_nyaa(
                 request_text=http_response.text,
                 limit=None,
                 site=self.SITE
             )
         else:
-            json_data = utils.parse_nyaa_rss(
+            json_data = parse_nyaa_rss(
                 request_text=http_response.text,
                 limit=None,
                 site=self.SITE
             )
 
-        return torrent.json_to_class(json_data)
+        return json_to_class(json_data)
 
     def get(self, view_id):
         r = requests.get(f'{self.URL}/view/{view_id}')
         r.raise_for_status()
 
-        json_data = utils.parse_single(request_text=r.text, site=self.SITE)
+        json_data = parse_single(request_text=r.text, site=self.SITE)
 
-        return torrent.json_to_class(json_data)
+        return json_to_class(json_data)
 
     def get_user(self, username):
         r = requests.get(f'{self.URL}/user/{username}')
         r.raise_for_status()
 
-        json_data = utils.parse_nyaa(
+        json_data = parse_nyaa(
             request_text=r.text,
             limit=None,
             site=self.SITE
         )
-        return torrent.json_to_class(json_data)
+        return json_to_class(json_data)

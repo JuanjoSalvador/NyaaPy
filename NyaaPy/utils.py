@@ -1,21 +1,12 @@
 import urllib
-from enum import Enum
+
 from urllib.parse import urlencode
-
 from lxml import etree
+from exceptions import CategoryNotFound
+from sites import TorrentSite
 
-
-class TorrentSite(Enum):
-    """
-    Contains torrent sites
-    """
-    NYAASI = "https://nyaa.si"
-    SUKEBEINYAASI = "https://sukebei.nyaa.si"
-
-
-def nyaa_categories(b):
-    c = b.replace('?c=', '')
-    cats = c.split('_')
+def get_nyaa_category(category: str):
+    cats = category.replace('?c=', '').split('_')
 
     cat = cats[0]
     sub_cat = cats[1]
@@ -73,8 +64,41 @@ def nyaa_categories(b):
     try:
         category_name = f"{categories[cat]['name']} - {categories[cat]['sub_cats'][sub_cat]}"
     except KeyError:
-        print("Unable to get Nyaa category name")
-        return
+        raise CategoryNotFound(cat)
+
+    return category_name
+
+
+def get_sukebei_category(category):
+    cats = category.replace('?c=', '').split('_')
+
+    cat = cats[0]
+    subcat = cats[1]
+
+    categories = {
+        "1": {
+            "name": "Art",
+            "subcats": {
+                "1": "Anime",
+                "2": "Doujinshi",
+                "3": "Games",
+                "4": "Manga",
+                "5": "Pictures",
+            }
+        },
+        "2": {
+            "name": "Real Life",
+            "subcats": {
+                "1": "Photobooks & Pictures",
+                "2": "Videos"
+            }
+        }
+    }
+
+    try:
+        category_name = f"{categories[cat]['name']} - {categories[cat]['subcats'][subcat]}"
+    except KeyError:
+        raise CategoryNotFound(cat)
 
     return category_name
 
@@ -158,22 +182,29 @@ def parse_nyaa(request_text, limit, site):
         else:
             block.append("default")
 
-        # Decide category.
-        if site == TorrentSite.NYAASI:
-            category = nyaa_categories(block[0])
-        elif site == TorrentSite.SUKEBEINYAASI:
-            category = sukebei_categories(block[0])
-        else:
-            raise ValueError("Unknown TorrentSite received!")
+        try:
+            match site:
+                case TorrentSite.NYAASI:
+                    category = get_nyaa_category(block[0])
+                case TorrentSite.SUKEBEINYAASI:
+                    category = get_sukebei_category(block[0])
+                case _:
+                    raise ValueError("Unknown TorrentSite received!")
+
+        except (CategoryNotFound, ValueError):
+            category = "Unknown"
 
         # Create torrent object
         try:
+            _id = block[1]
+            _download_url = block[3]
+
             torrent = {
-                'id': block[1],
+                'id': _id,
                 'category': category,
-                'url': "{}/view/{}".format(uri, block[1]),
+                'url': f"{uri}/view/{_id}",
                 'name': block[2],
-                'download_url': "{}/download/{}".format(uri, block[3]),
+                'download_url': f"{uri}/download/{_download_url}",
                 'magnet': block[4],
                 'size': block[5],
                 'date': block[6],
@@ -185,6 +216,7 @@ def parse_nyaa(request_text, limit, site):
             torrents.append(torrent)
         except IndexError:
             pass
+
     return torrents
 
 
@@ -212,11 +244,13 @@ def parse_single(request_text, site):
         if el.rstrip():
             torrent_files.append(el)
 
+    _uploader = data[4]
+
     torrent['title'] = \
         tree.xpath("//h3[@class='panel-title']/text()")[0].strip()
     torrent['category'] = data[0]
-    torrent['uploader'] = data[4]
-    torrent['uploader_profile'] = "{}/user/{}".format(uri, data[4])
+    torrent['uploader'] = _uploader
+    torrent['uploader_profile'] = f"{uri}/user/{_uploader}",
     torrent['website'] = data[6]
     torrent['size'] = data[8]
     torrent['date'] = data[3]
@@ -231,42 +265,6 @@ def parse_single(request_text, site):
         torrent['description'] += s.text
 
     return torrent
-
-
-def sukebei_categories(b):
-    c = b.replace('?c=', '')
-    cats = c.split('_')
-
-    cat = cats[0]
-    subcat = cats[1]
-
-    categories = {
-        "1": {
-            "name": "Art",
-            "subcats": {
-                "1": "Anime",
-                "2": "Doujinshi",
-                "3": "Games",
-                "4": "Manga",
-                "5": "Pictures",
-            }
-        },
-        "2": {
-            "name": "Real Life",
-            "subcats": {
-                "1": "Photobooks & Pictures",
-                "2": "Videos"
-            }
-        }
-    }
-
-    try:
-        category_name = f"{categories[cat]['name']} - {categories[cat]['subcats'][subcat]}"
-    except KeyError:
-        print("Unable to get Sukebei category name")
-        return
-
-    return category_name
 
 
 def magnet_builder(info_hash, title):
