@@ -15,3 +15,6 @@ class Torrent(object):
     def __init__(self, my_dict):
         for key in my_dict:
             setattr(self, key, my_dict[key])
+
+    def to_dict(self):
+        return self.__dict__
