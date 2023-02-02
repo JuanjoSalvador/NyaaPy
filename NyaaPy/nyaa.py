@@ -30,6 +30,8 @@ class Nyaa:
         subcategory = kwargs.get('subcategory', 0)
         filters = kwargs.get('filters', 0)
         page = kwargs.get('page', 0)
+        sorting = kwargs.get('sort', 'id') # Sorting by id = sorting by date, this is the default.
+        order = kwargs.get('order', 'desc')
 
         if user:
             user_uri = f"user/{user}"
@@ -37,9 +39,12 @@ class Nyaa:
             user_uri = ""
 
         if page > 0:
-            uri = f"{url}/{user_uri}?f={filters}&c={category}_{subcategory}&q={keyword}&p={page}"
+            r = requests.get("{}/{}?f={}&c={}_{}&q={}&p={}&s={}&o={}".format(
+                url, user_uri, filters, category, subcategory, keyword,
+                page, sorting, order))
         else:
-            uri = f"{url}/{user_uri}?f={filters}&c={category}_{subcategory}&q={keyword}"
+            r = requests.get("{}/{}?f={}&c={}_{}&q={}&s={}&o={}".format(
+                url, user_uri, filters, category, subcategory, keyword, sorting, order))
 
         if not user:
             uri += "&page=rss"
