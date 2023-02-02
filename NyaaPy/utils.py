@@ -12,10 +12,6 @@ class TorrentSite(Enum):
     NYAASI = "https://nyaa.si"
     SUKEBEINYAASI = "https://sukebei.nyaa.si"
 
-    # * nyaa.pantsu.cat redirects to nyaa.net
-    NYAANET = "https://nyaa.net"
-    SUKEBEINYAANET = "https://sukebei.nyaa.net"
-
 
 def nyaa_categories(b):
     c = b.replace('?c=', '')
@@ -92,9 +88,7 @@ def parse_nyaa_rss(request_text, limit, site):
 
     for item in root.xpath("channel/item")[:limit]:
         # Decide category.
-        if site in [TorrentSite.NYAASI, TorrentSite.NYAANET]:
-            category = item.findtext("nyaa:categoryId", namespaces=item.nsmap)
-        elif site in [TorrentSite.SUKEBEINYAASI, TorrentSite.SUKEBEINYAANET]:
+        if site in (TorrentSite.NYAASI, TorrentSite.SUKEBEINYAASI):
             category = item.findtext("nyaa:categoryId", namespaces=item.nsmap)
         else:
             raise ValueError("Unknown TorrentSite received!")
@@ -165,9 +159,9 @@ def parse_nyaa(request_text, limit, site):
             block.append("default")
 
         # Decide category.
-        if site in [TorrentSite.NYAASI, TorrentSite.NYAANET]:
+        if site == TorrentSite.NYAASI:
             category = nyaa_categories(block[0])
-        elif site in [TorrentSite.SUKEBEINYAASI, TorrentSite.SUKEBEINYAANET]:
+        elif site == TorrentSite.SUKEBEINYAASI:
             category = sukebei_categories(block[0])
         else:
             raise ValueError("Unknown TorrentSite received!")
@@ -292,29 +286,3 @@ def magnet_builder(info_hash, title):
         magnet_link += f"&{urlencode({'tr': tracker})}"
 
     return magnet_link
-
-
-# Pantsu Utils
-def query_builder(q, params):
-    available_params = ["category", "page", "limit", "userID", "fromID",
-                        "status", "maxage", "toDate", "fromDate",
-                        "dateType", "minSize", "maxSize", "sizeType",
-                        "sort", "order", "lang"]
-    query = "?q={}".format(q.replace(" ", "+"))
-
-    for param, value in params.items():
-        if param in available_params:
-            if (param != "category" and param != "status" and
-                    param != "lang"):
-                query += "&{}={}".format(param, value)
-            elif param == "category":
-                query += "&c={}_{}".format(value[0], value[1])
-
-            elif param == "status":
-                query += "&s={}".format(value)
-
-            elif param == "lang":
-                for lang in value:
-                    query += "&lang={}".format(lang)
-
-    return query
