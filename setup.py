@@ -10,6 +10,7 @@ setup(name='nyaapy',
       install_requires=[
             "requests",
             "beautifulsoup4",
+            "lxml",
       ],
       url='https://github.com/juanjosalvador/nyaapy',
       long_description=long_desc,
