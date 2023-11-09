@@ -23,34 +23,30 @@ class Nyaa:
         return torrent.json_to_class(json_data)
 
     def search(self, keyword, **kwargs):
-        url = self.URL
+        base_url = self.URL
 
         user = kwargs.get('user', None)
         category = kwargs.get('category', 0)
         subcategory = kwargs.get('subcategory', 0)
         filters = kwargs.get('filters', 0)
         page = kwargs.get('page', 0)
-        sorting = kwargs.get('sort', 'id') # Sorting by id = sorting by date, this is the default.
+        sorting = kwargs.get('sort', 'id')  # Sorting by id = sorting by date, this is the default.
         order = kwargs.get('order', 'desc')
 
-        if user:
-            user_uri = f"user/{user}"
-        else:
-            user_uri = ""
+        user_uri = f"user/{user}" if user else ""
 
         if page > 0:
-            r = requests.get("{}/{}?f={}&c={}_{}&q={}&p={}&s={}&o={}".format(
-                url, user_uri, filters, category, subcategory, keyword,
-                page, sorting, order))
+            search_uri = "{}/{}?f={}&c={}_{}&q={}&p={}&s={}&o={}".format(
+                base_url, user_uri, filters, category, subcategory, keyword,
+                page, sorting, order)
         else:
-            r = requests.get("{}/{}?f={}&c={}_{}&q={}&s={}&o={}".format(
-                url, user_uri, filters, category, subcategory, keyword, sorting, order))
+            search_uri = "{}/{}?f={}&c={}_{}&q={}&s={}&o={}".format(
+                base_url, user_uri, filters, category, subcategory, keyword, sorting, order)
 
         if not user:
-            uri += "&page=rss"
+            search_uri += "&page=rss"
 
-        http_response = requests.get(uri)
-
+        http_response = requests.get(search_uri)
         http_response.raise_for_status()
 
         if user:
@@ -66,6 +62,7 @@ class Nyaa:
                 site=self.SITE
             )
 
+        # Convert JSON data to a class object
         return torrent.json_to_class(json_data)
 
     def get(self, view_id):
