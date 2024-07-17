@@ -2,9 +2,9 @@
 <img src="https://github.com/JuanjoSalvador/NyaaPy/blob/master/nyaapy-logo.png?raw=true" />
 </p>
 
-![](https://img.shields.io/badge/Python-3.5-green.svg)
+![](https://img.shields.io/badge/Python-3.10-green.svg)
 ![](https://img.shields.io/badge/Nyaa.si-supported-green.svg)
-![](https://img.shields.io/badge/NyaaPantsu-supported-green.svg)
+![](https://img.shields.io/badge/NyaaPantsu-no%20longer%20supported-red.svg)
 [![GitHub license](https://img.shields.io/badge/license-MIT-blue.svg)](https://raw.githubusercontent.com/JuanjoSalvador/NyaaPy/master/LICENSE.txt)
 
 Unofficial Python module for Nyaa.si (WebScraping) and Nyaa.pantsu.cat (API wrapper)
@@ -23,7 +23,7 @@ Install it using pip.
 
 ## License
 
-Copyright 2017 Juanjo Salvador
+Copyright 2024 Juanjo Salvador
 
 Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
 
