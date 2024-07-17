@@ -1,5 +1,5 @@
 import requests
-from NyaaPy import utils
+from nyaapy import utils
 
 
 class SukebeiNyaa:
@@ -9,19 +9,23 @@ class SukebeiNyaa:
 
     def search(self, keyword, **kwargs):
         uri = self.SITE.value
-        category = kwargs.get('category', 0)
-        subcategory = kwargs.get('subcategory', 0)
-        filters = kwargs.get('filters', 0)
-        page = kwargs.get('page', 0)
+        category = kwargs.get("category", 0)
+        subcategory = kwargs.get("subcategory", 0)
+        filters = kwargs.get("filters", 0)
+        page = kwargs.get("page", 0)
 
         if page > 0:
-            r = requests.get("{}/?f={}&c={}_{}&q={}&p={}".format(
-                uri, filters, category, subcategory,
-                keyword, page))
+            r = requests.get(
+                "{}/?f={}&c={}_{}&q={}&p={}".format(
+                    uri, filters, category, subcategory, keyword, page
+                )
+            )
         else:
-            r = requests.get("{}/?f={}&c={}_{}&q={}".format(
-                uri, filters, category, subcategory,
-                keyword))
+            r = requests.get(
+                "{}/?f={}&c={}_{}&q={}".format(
+                    uri, filters, category, subcategory, keyword
+                )
+            )
 
         r.raise_for_status()
         return utils.parse_nyaa(r.text, limit=None, site=self.SITE)
@@ -42,8 +46,4 @@ class SukebeiNyaa:
         r = requests.get(self.SITE.value)
         r.raise_for_status()
 
-        return utils.parse_nyaa(
-            r.text,
-            limit=number_of_results + 1,
-            site=self.SITE
-        )
+        return utils.parse_nyaa(r.text, limit=number_of_results + 1, site=self.SITE)

@@ -9,6 +9,7 @@ class TorrentSite(Enum):
     """
     Contains torrent sites
     """
+
     NYAASI = "https://nyaa.si"
     SUKEBEINYAASI = "https://sukebei.nyaa.si"
 
@@ -18,8 +19,8 @@ class TorrentSite(Enum):
 
 
 def nyaa_categories(b):
-    c = b.replace('?c=', '')
-    cats = c.split('_')
+    c = b.replace("?c=", "")
+    cats = c.split("_")
 
     cat = cats[0]
     sub_cat = cats[1]
@@ -31,23 +32,17 @@ def nyaa_categories(b):
                 "1": "Anime Music Video",
                 "2": "English-translated",
                 "3": "Non-English-translated",
-                "4": "Raw"
-            }
+                "4": "Raw",
+            },
         },
-        "2": {
-            "name": "Audio",
-            "sub_cats": {
-                "1": "Lossless",
-                "2": "Lossy"
-            }
-        },
+        "2": {"name": "Audio", "sub_cats": {"1": "Lossless", "2": "Lossy"}},
         "3": {
             "name": "Literature",
             "sub_cats": {
                 "1": "English-translated",
                 "2": "Non-English-translated",
-                "3": "Raw"
-            }
+                "3": "Raw",
+            },
         },
         "4": {
             "name": "Live Action",
@@ -55,27 +50,17 @@ def nyaa_categories(b):
                 "1": "English-translated",
                 "2": "Idol/Promotional Video",
                 "3": "Non-English-translated",
-                "4": "Raw"
-            }
+                "4": "Raw",
+            },
         },
-        "5": {
-            "name": "Pictures",
-            "sub_cats": {
-                "1": "Graphics",
-                "2": "Photos"
-            }
-        },
-        "6": {
-            "name": "Software",
-            "sub_cats": {
-                "1": "Applications",
-                "2": "Games"
-            }
-        }
+        "5": {"name": "Pictures", "sub_cats": {"1": "Graphics", "2": "Photos"}},
+        "6": {"name": "Software", "sub_cats": {"1": "Applications", "2": "Games"}},
     }
 
     try:
-        category_name = f"{categories[cat]['name']} - {categories[cat]['sub_cats'][sub_cat]}"
+        category_name = (
+            f"{categories[cat]['name']} - {categories[cat]['sub_cats'][sub_cat]}"
+        )
     except KeyError:
         print("Unable to get Nyaa category name")
         return
@@ -102,21 +87,26 @@ def parse_nyaa_rss(request_text, limit, site):
         try:
             is_remake = item.findtext("nyaa:remake", namespaces=item.nsmap) == "Yes"
             is_trusted = item.findtext("nyaa:trusted", namespaces=item.nsmap) == "Yes"
-            item_type = "remake" if is_remake else "trusted" if is_trusted else "default"
+            item_type = (
+                "remake" if is_remake else "trusted" if is_trusted else "default"
+            )
 
             torrent = {
-                'id': item.findtext("guid").split("/")[-1],
-                'category': category,
-                'url': item.findtext("guid"),
-                'name': item.findtext("title"),
-                'download_url': item.findtext("link"),
-                'magnet': magnet_builder(item.findtext("nyaa:infoHash", namespaces=item.nsmap), item.findtext("title")),
-                'size': item.findtext("nyaa:size", namespaces=item.nsmap),
-                'date': item.findtext("pubDate"),
-                'seeders': item.findtext("nyaa:seeders", namespaces=item.nsmap),
-                'leechers': item.findtext("nyaa:leechers", namespaces=item.nsmap),
-                'completed_downloads': None,
-                'type': item_type
+                "id": item.findtext("guid").split("/")[-1],
+                "category": category,
+                "url": item.findtext("guid"),
+                "name": item.findtext("title"),
+                "download_url": item.findtext("link"),
+                "magnet": magnet_builder(
+                    item.findtext("nyaa:infoHash", namespaces=item.nsmap),
+                    item.findtext("title"),
+                ),
+                "size": item.findtext("nyaa:size", namespaces=item.nsmap),
+                "date": item.findtext("pubDate"),
+                "seeders": item.findtext("nyaa:seeders", namespaces=item.nsmap),
+                "leechers": item.findtext("nyaa:leechers", namespaces=item.nsmap),
+                "completed_downloads": None,
+                "type": item_type,
             }
             torrents.append(torrent)
         except IndexError:
@@ -141,7 +131,7 @@ def parse_nyaa(request_text, limit, site):
         for td in tr.xpath("./td"):
             for link in td.xpath("./a"):
 
-                href = link.attrib.get("href").split('/')[-1]
+                href = link.attrib.get("href").split("/")[-1]
 
                 # Only caring about non-comment pages.
                 if href[-9:] != "#comments":
@@ -155,9 +145,9 @@ def parse_nyaa(request_text, limit, site):
 
         # Add type of torrent based on tr class.
         if tr.attrib.get("class") is not None:
-            if 'danger' in tr.attrib.get("class"):
+            if "danger" in tr.attrib.get("class"):
                 block.append("remake")
-            elif 'success' in tr.attrib.get("class"):
+            elif "success" in tr.attrib.get("class"):
                 block.append("trusted")
             else:
                 block.append("default")
@@ -175,18 +165,18 @@ def parse_nyaa(request_text, limit, site):
         # Create torrent object
         try:
             torrent = {
-                'id': block[1],
-                'category': category,
-                'url': "{}/view/{}".format(uri, block[1]),
-                'name': block[2],
-                'download_url': "{}/download/{}".format(uri, block[3]),
-                'magnet': block[4],
-                'size': block[5],
-                'date': block[6],
-                'seeders': block[7],
-                'leechers': block[8],
-                'completed_downloads': block[9],
-                'type': block[10]
+                "id": block[1],
+                "category": category,
+                "url": "{}/view/{}".format(uri, block[1]),
+                "name": block[2],
+                "download_url": "{}/download/{}".format(uri, block[3]),
+                "magnet": block[4],
+                "size": block[5],
+                "date": block[6],
+                "seeders": block[7],
+                "leechers": block[8],
+                "completed_downloads": block[9],
+                "type": block[10],
             }
             torrents.append(torrent)
         except IndexError:
@@ -218,30 +208,29 @@ def parse_single(request_text, site):
         if el.rstrip():
             torrent_files.append(el)
 
-    torrent['title'] = \
-        tree.xpath("//h3[@class='panel-title']/text()")[0].strip()
-    torrent['category'] = data[0]
-    torrent['uploader'] = data[4]
-    torrent['uploader_profile'] = "{}/user/{}".format(uri, data[4])
-    torrent['website'] = data[6]
-    torrent['size'] = data[8]
-    torrent['date'] = data[3]
-    torrent['seeders'] = data[5]
-    torrent['leechers'] = data[7]
-    torrent['completed'] = data[9]
-    torrent['hash'] = data[10]
-    torrent['files'] = torrent_files
+    torrent["title"] = tree.xpath("//h3[@class='panel-title']/text()")[0].strip()
+    torrent["category"] = data[0]
+    torrent["uploader"] = data[4]
+    torrent["uploader_profile"] = "{}/user/{}".format(uri, data[4])
+    torrent["website"] = data[6]
+    torrent["size"] = data[8]
+    torrent["date"] = data[3]
+    torrent["seeders"] = data[5]
+    torrent["leechers"] = data[7]
+    torrent["completed"] = data[9]
+    torrent["hash"] = data[10]
+    torrent["files"] = torrent_files
 
-    torrent['description'] = ""
+    torrent["description"] = ""
     for s in tree.xpath("//div[@id='torrent-description']"):
-        torrent['description'] += s.text
+        torrent["description"] += s.text
 
     return torrent
 
 
 def sukebei_categories(b):
-    c = b.replace('?c=', '')
-    cats = c.split('_')
+    c = b.replace("?c=", "")
+    cats = c.split("_")
 
     cat = cats[0]
     subcat = cats[1]
@@ -255,19 +244,18 @@ def sukebei_categories(b):
                 "3": "Games",
                 "4": "Manga",
                 "5": "Pictures",
-            }
+            },
         },
         "2": {
             "name": "Real Life",
-            "subcats": {
-                "1": "Photobooks & Pictures",
-                "2": "Videos"
-            }
-        }
+            "subcats": {"1": "Photobooks & Pictures", "2": "Videos"},
+        },
     }
 
     try:
-        category_name = f"{categories[cat]['name']} - {categories[cat]['subcats'][subcat]}"
+        category_name = (
+            f"{categories[cat]['name']} - {categories[cat]['subcats'][subcat]}"
+        )
     except KeyError:
         print("Unable to get Sukebei category name")
         return
@@ -284,10 +272,12 @@ def magnet_builder(info_hash, title):
         "udp://open.stealth.si:80/announce",
         "udp://tracker.opentrackr.org:1337/announce",
         "udp://exodus.desync.com:6969/announce",
-        "udp://tracker.torrent.eu.org:451/announce"
+        "udp://tracker.torrent.eu.org:451/announce",
     ]
 
-    magnet_link = f"magnet:?xt=urn:btih:{info_hash}&" + urlencode({"dn": title}, quote_via=urllib.parse.quote)
+    magnet_link = f"magnet:?xt=urn:btih:{info_hash}&" + urlencode(
+        {"dn": title}, quote_via=urllib.parse.quote
+    )
     for tracker in known_trackers:
         magnet_link += f"&{urlencode({'tr': tracker})}"
 
@@ -296,16 +286,29 @@ def magnet_builder(info_hash, title):
 
 # Pantsu Utils
 def query_builder(q, params):
-    available_params = ["category", "page", "limit", "userID", "fromID",
-                        "status", "maxage", "toDate", "fromDate",
-                        "dateType", "minSize", "maxSize", "sizeType",
-                        "sort", "order", "lang"]
+    available_params = [
+        "category",
+        "page",
+        "limit",
+        "userID",
+        "fromID",
+        "status",
+        "maxage",
+        "toDate",
+        "fromDate",
+        "dateType",
+        "minSize",
+        "maxSize",
+        "sizeType",
+        "sort",
+        "order",
+        "lang",
+    ]
     query = "?q={}".format(q.replace(" ", "+"))
 
     for param, value in params.items():
         if param in available_params:
-            if (param != "category" and param != "status" and
-                    param != "lang"):
+            if param != "category" and param != "status" and param != "lang":
                 query += "&{}={}".format(param, value)
             elif param == "category":
                 query += "&c={}_{}".format(value[0], value[1])
