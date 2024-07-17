@@ -20,6 +20,7 @@ class Nyaa:
             limit=number_of_results + 1,
             site=self.SITE
         )
+        
         return torrent.json_to_class(json_data)
 
     def search(self, keyword, **kwargs):
