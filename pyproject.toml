@@ -1,0 +1,23 @@
+[tool.poetry]
+name = "nyaapy"
+version = "0.7"
+description = "Unofficial Python wrapper for NyaaPantsu API and Nyaa.si"
+authors = ["Juanjo Salvador <juanjosalvador@netc.eu>"]
+license = "MIT"
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.10"
+requests = "^2.32.3"
+lxml = "^5.2.2"
+
+[tool.poetry.group.dev.dependencies]
+pytest = "^8.2.2"
+black = "^24.4.2"
+mypy = "^1.10.1"
+types-requests = "^2.32.0.20240712"
+lxml-stubs = "^0.5.1"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
