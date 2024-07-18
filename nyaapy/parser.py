@@ -2,6 +2,7 @@ from lxml import etree
 from nyaapy.magnet import magnet_builder
 from nyaapy.torrent import TorrentSite
 
+
 def nyaa_categories(b):
     c = b.replace("?c=", "")
     cats = c.split("_")

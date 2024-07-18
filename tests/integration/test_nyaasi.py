@@ -1,6 +1,7 @@
 from nyaapy.nyaasi.nyaa import Nyaa
 from nyaapy.torrent import Torrent
 
+
 def test_nyaa_last_uploads():
     request = Nyaa.last_uploads(number_of_results=10)
     torrent = request[0]
@@ -17,7 +18,7 @@ def test_nyaa_search():
 
 
 def test_nyaa_get_single():
-    request = Nyaa.get(view_id='1847113')
+    request = Nyaa.get(view_id="1847113")
 
     assert isinstance(request, Torrent) == True
 

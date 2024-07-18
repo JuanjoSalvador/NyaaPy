@@ -12,11 +12,13 @@ def json_to_class(data):
     else:
         return Torrent(data)
 
+
 # This deals with converting the dict to an object
 class Torrent(object):
     def __init__(self, my_dict):
         for key in my_dict:
             setattr(self, key, my_dict[key])
+
 
 class TorrentSite(Enum):
     """
@@ -25,5 +27,5 @@ class TorrentSite(Enum):
 
     NYAASI = "https://nyaa.si"
     SUKEBEINYAASI = "https://sukebei.nyaa.si"
-    
+
     NYAALAND = "https://nyaa.land"

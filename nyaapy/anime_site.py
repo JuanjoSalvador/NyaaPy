@@ -2,6 +2,7 @@ import requests
 from nyaapy import torrent
 from nyaapy.parser import parse_nyaa, parse_single, parse_nyaa_rss
 
+
 class AnimeTorrentSite:
     SITE = torrent.TorrentSite.NYAASI
     URL = "https://nyaa.si"

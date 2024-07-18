@@ -1,6 +1,7 @@
 import urllib
 from urllib.parse import urlencode
 
+
 def magnet_builder(info_hash, title):
     """
     Generates a magnet link using the info_hash and title of a given file.
