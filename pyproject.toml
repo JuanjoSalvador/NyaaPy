@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "nyaapy"
-version = "0.6.3"
+version = "0.7"
 description = "Unofficial Python wrapper for NyaaPantsu API and Nyaa.si"
 authors = ["Juanjo Salvador <juanjosalvador@netc.eu>"]
 license = "MIT"
