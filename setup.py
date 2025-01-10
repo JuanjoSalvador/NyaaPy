@@ -1,5 +1,6 @@
-from setuptools import setup, find_packages  # type: ignore
 from os import path
+
+from setuptools import find_packages, setup  # type: ignore
 
 currdir = path.abspath(path.dirname(__file__))
 with open(path.join(currdir, "README.md"), encoding="utf-8") as f:
@@ -11,6 +12,8 @@ setup(
     install_requires=[
         "requests",
         "lxml",
+        "aiohttp",
+        "uvloop"
     ],
     url="https://github.com/juanjosalvador/nyaapy",
     long_description=long_desc,

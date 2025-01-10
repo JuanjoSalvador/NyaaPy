@@ -10,6 +10,8 @@ readme = "README.md"
 python = "^3.10"
 requests = "^2.32.3"
 lxml = "^5.2.2"
+uvloop = "^0.20.0"
+aiohttp = "^3.10.9"
 
 [tool.poetry.group.dev.dependencies]
 pytest = "^8.2.2"

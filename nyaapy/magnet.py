@@ -1,5 +1,6 @@
 import urllib
 from urllib.parse import urlencode
+from urllib.parse import quote
 
 
 def magnet_builder(info_hash, title):
@@ -15,7 +16,7 @@ def magnet_builder(info_hash, title):
     ]
 
     magnet_link = f"magnet:?xt=urn:btih:{info_hash}&" + urlencode(
-        {"dn": title}, quote_via=urllib.parse.quote
+        {"dn": title}, quote_via=quote
     )
     for tracker in known_trackers:
         magnet_link += f"&{urlencode({'tr': tracker})}"

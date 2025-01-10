@@ -1,4 +1,5 @@
 from lxml import etree
+
 from nyaapy.magnet import magnet_builder
 from nyaapy.torrent import TorrentSite
 
