@@ -1,13 +1,11 @@
 import aiohttp
 import requests
 
-from nyaapy import torrent
+from nyaapy.anime.base import BaseTorrentSite
 from nyaapy.parser import parse_nyaa, parse_nyaa_rss, parse_single
 
 
-class AnimeTorrentSite:
-    SITE = torrent.TorrentSite.NYAASI
-    URL = "https://nyaa.si"
+class AnimeTorrentSite(BaseTorrentSite):
 
     @classmethod
     def last_uploads(cls, number_of_results: int):
@@ -20,55 +18,12 @@ class AnimeTorrentSite:
             request_text=r.text, limit=number_of_results, site=cls.SITE
         )
 
-        return torrent.json_to_class(json_data)
-
-    @classmethod
-    def parse_request(cls, keyword, kwargs):
-        base_url = cls.URL
-
-        user = kwargs.get("user", None)
-        category = kwargs.get("category", 0)
-        subcategory = kwargs.get("subcategory", 0)
-        filters = kwargs.get("filters", 0)
-        page = kwargs.get("page", 0)
-        sorting = kwargs.get(
-            "sort", "id"
-        )  # Sorting by id = sorting by date, this is the default.
-        order = kwargs.get("order", "desc")
-
-        user_uri = f"user/{user}" if user else ""
-
-        if page > 0:
-            search_uri = "{}/{}?f={}&c={}_{}&q={}&p={}&s={}&o={}".format(
-                base_url,
-                user_uri,
-                filters,
-                category,
-                subcategory,
-                keyword,
-                page,
-                sorting,
-                order,
-            )
-        else:
-            search_uri = "{}/{}?f={}&c={}_{}&q={}&s={}&o={}".format(
-                base_url,
-                user_uri,
-                filters,
-                category,
-                subcategory,
-                keyword,
-                sorting,
-                order,
-            )
-
-        if not user:
-            search_uri += "&page=rss"
-        return user, search_uri
+        return cls._json_to_class(json_data)
 
     @classmethod
     def search(cls, keyword: str, **kwargs):
-        user, search_uri = cls.parse_request(keyword, kwargs)
+        base_url = cls.URL
+        user, search_uri = cls._parse_request(base_url, keyword, kwargs)
 
         http_response = requests.get(search_uri)
         http_response.raise_for_status()
@@ -83,7 +38,7 @@ class AnimeTorrentSite:
             )
 
         # Convert JSON data to a class object
-        return torrent.json_to_class(json_data)
+        return cls._json_to_class(json_data)
 
     @classmethod
     def get(cls, view_id: int):
@@ -92,7 +47,7 @@ class AnimeTorrentSite:
 
         json_data = parse_single(request_text=r.content, site=cls.SITE)
 
-        return torrent.json_to_class(json_data)
+        return cls._json_to_class(json_data)
 
     @classmethod
     def get_from_user(cls, username):
@@ -100,12 +55,10 @@ class AnimeTorrentSite:
         r.raise_for_status()
 
         json_data = parse_nyaa(request_text=r.content, limit=None, site=cls.SITE)
-        return torrent.json_to_class(json_data)
+        return cls._json_to_class(json_data)
 
 
 class AnimeTorrentSiteAsync(AnimeTorrentSite):
-    SITE = torrent.TorrentSite.NYAASI
-    URL = "https://nyaa.si"
 
     @classmethod
     async def last_uploads(cls, number_of_results: int):
@@ -121,11 +74,11 @@ class AnimeTorrentSiteAsync(AnimeTorrentSite):
                     site=cls.SITE,
                 )
 
-                return torrent.json_to_class(json_data)
+                return cls._json_to_class(json_data)
 
     @classmethod
     async def search(cls, keyword: str, **kwargs):
-        user, search_uri = cls.parse_request(keyword, kwargs)
+        user, search_uri = cls._parse_request(keyword, kwargs)
 
         async with aiohttp.ClientSession() as session:
             async with session.get(search_uri) as http_response:
@@ -146,7 +99,7 @@ class AnimeTorrentSiteAsync(AnimeTorrentSite):
                     )
 
                 # Convert JSON data to a class object
-                return torrent.json_to_class(json_data)
+                return cls._json_to_class(json_data)
 
     @classmethod
     async def get(cls, view_id: int):
@@ -156,7 +109,7 @@ class AnimeTorrentSiteAsync(AnimeTorrentSite):
 
                 json_data = parse_single(request_text=r.content, site=cls.SITE)
 
-                return torrent.json_to_class(json_data)
+                return cls._json_to_class(json_data)
 
     @classmethod
     async def get_from_user(cls, username):
@@ -167,4 +120,4 @@ class AnimeTorrentSiteAsync(AnimeTorrentSite):
                 json_data = parse_nyaa(
                     request_text=r.content, limit=None, site=cls.SITE
                 )
-                return torrent.json_to_class(json_data)
+                return cls._json_to_class(json_data)
