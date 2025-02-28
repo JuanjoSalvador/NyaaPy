@@ -1,7 +1,7 @@
 from lxml import etree
 
 from nyaapy.magnet import magnet_builder
-from nyaapy.torrent import TorrentSite
+from nyaapy.torrent_site import TorrentSites
 
 
 def nyaa_categories(b):
@@ -63,12 +63,12 @@ def parse_nyaa_rss(request_text, limit, site):
 
     for item in root.xpath("channel/item")[:limit]:
         # Decide category.
-        if site in [TorrentSite.NYAASI, TorrentSite.NYAALAND]:
+        if site in [TorrentSites.NYAASI, TorrentSites.NYAALAND]:
             category = item.findtext("nyaa:categoryId", namespaces=item.nsmap)
-        elif site in [TorrentSite.SUKEBEINYAASI, TorrentSite.SUKEBEINYAALAND]:
+        elif site in [TorrentSites.SUKEBEINYAASI, TorrentSites.SUKEBEINYAALAND]:
             category = item.findtext("nyaa:categoryId", namespaces=item.nsmap)
         else:
-            raise ValueError("Unknown TorrentSite received!")
+            raise ValueError("Unknown TorrentSites received!")
 
         try:
             is_remake = item.findtext("nyaa:remake", namespaces=item.nsmap) == "Yes"
@@ -141,12 +141,12 @@ def parse_nyaa(request_text, limit, site):
             block.append("default")
 
         # Decide category.
-        if site in [TorrentSite.NYAASI, TorrentSite.NYAALAND]:
+        if site in [TorrentSites.NYAASI, TorrentSites.NYAALAND]:
             category = nyaa_categories(block[0])
-        elif site is TorrentSite.SUKEBEINYAASI:
+        elif site is TorrentSites.SUKEBEINYAASI:
             category = sukebei_categories(block[0])
         else:
-            raise ValueError("Unknown TorrentSite received!")
+            raise ValueError("Unknown TorrentSites received!")
 
         # Create torrent object
         try:
