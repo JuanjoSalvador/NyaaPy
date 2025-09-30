@@ -29,3 +29,4 @@ class TorrentSite(Enum):
     SUKEBEINYAASI = "https://sukebei.nyaa.si"
 
     NYAALAND = "https://nyaa.land"
+    SUKEBEINYAALAND = "https://sukebei.nyaa.land"
